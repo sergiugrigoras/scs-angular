@@ -124,5 +124,8 @@
       }
     }
   },
-  "defaultProject": "scs"
+  "defaultProject": "scs",
+  "cli": {
+    "analytics": "09224d93-a295-429b-96e2-d00cca843d56"
+  }
 }
