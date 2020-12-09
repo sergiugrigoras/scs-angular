@@ -47,14 +47,15 @@ export class AuthService {
       });
   }
 
-  login(user: UserModel) {
+  login(user: UserModel, returnUrl: string) {
+    console.log(user, returnUrl);
     this.http.post(apiUrl + '/api/auth/login', user, httpOptions)
       .subscribe(response => {
         const token = (<any>response).accessToken;
         const refreshToken = (<any>response).refreshToken;
         localStorage.setItem("jwt", token);
         localStorage.setItem("refreshToken", refreshToken);
-        this.router.navigate(["/"]);
+        this.router.navigate([returnUrl]);
       }, err => {
         console.log(err);
       });

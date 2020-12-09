@@ -8,13 +8,14 @@
         <div class="navbar-nav">
             <a class="nav-item nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:
                 true}" (click)="checkLoggedIn()">Home <span class="sr-only">(current)</span></a>
+            <a class="nav-item nav-link" routerLink="/drive" routerLinkActive="active"
+                (click)="checkLoggedIn()">Drive</a>
             <a *ngIf="!isLoggedIn" class="nav-item nav-link" routerLink="/register" routerLinkActive="active"
                 (click)="checkLoggedIn()">Register</a>
             <a *ngIf="!isLoggedIn" class="nav-item nav-link" routerLink="/login" routerLinkActive="active"
                 (click)="checkLoggedIn()">Login</a>
             <button *ngIf="isLoggedIn" type="button" class="btn nav-item nav-link"
                 (click)="logOut(); checkLoggedIn()">Logout</button>
-            <a class="nav-item nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
         </div>
     </div>
 </nav>

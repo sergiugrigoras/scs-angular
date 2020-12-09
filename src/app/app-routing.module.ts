@@ -9,6 +9,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   { path: 'drive/:id', component: DriveComponent, canActivate: [AuthGuard] },
+  { path: 'drive', component: DriveComponent, canActivate: [AuthGuard] },
   // { path: 'second-component', component: SecondComponent },
   // { path: 'third-component/:id/:name', component: ThirdComponent },
 
