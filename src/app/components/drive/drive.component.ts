@@ -40,7 +40,8 @@ export class DriveComponent implements OnInit {
           this.folder = data;
           if (data.isFolder) {
             this.driveService.getFolderContent(this.id).subscribe(data => {
-              this.content = data;
+              this.content = data.sort(this.sortByNameDesc);
+
             });
           }
         }, error => {
@@ -62,7 +63,6 @@ export class DriveComponent implements OnInit {
 
   fsoTouched(event: any) {
     //console.log(event);
-
     if (!event.ctrlKey && !event.shiftKey) {
       let lastTouched = this.content.find(elem => elem.id == event.id);
       if (lastTouched)
@@ -99,7 +99,7 @@ export class DriveComponent implements OnInit {
   }
 
   addFolder(name: HTMLInputElement) {
-    console.log(name.value.length);
+
     this.driveService.addFolder({
       isFolder: true,
       name: name.value,
@@ -168,7 +168,7 @@ export class DriveComponent implements OnInit {
       Array.from(files).map((file, index) => {
         return formData.append('file' + index, file, file.name);
       });
-      formData.append('parentId', String(this.folder.id!));
+      formData.append('rootId', String(this.folder.id!));
 
       this.driveService.upload(formData).subscribe(data => {
         data.forEach(e => {
@@ -234,6 +234,32 @@ export class DriveComponent implements OnInit {
     }
   }
 
+  sortFso() {
+    this.content.sort(
+
+    );
+  }
+
+  sortByNameAsc = (a: any, b: any) => {
+    let x = a.isFolder;
+    let y = b.isFolder;
+    if (x && y)
+      return a.name.localeCompare(b.name);
+    else if (x || y)
+      return (x) ? -1 : 1;
+    return a.name.localeCompare(b.name);
+  }
+
+  sortByNameDesc = (a: any, b: any) => {
+    let x = a.isFolder;
+    let y = b.isFolder;
+    if (x && y)
+      return b.name.localeCompare(a.name);
+    else if (x || y)
+      return (x) ? 1 : -1;
+    return b.name.localeCompare(a.name);
+  }
+
   private between(x: number, val1: number, val2: number): boolean {
     if (val1 <= val2)
       return x >= val1 && x <= val2;
@@ -250,6 +276,7 @@ export class DriveComponent implements OnInit {
       }
     });
   }
+
 
   get selectedCount() {
     let c = 0;
