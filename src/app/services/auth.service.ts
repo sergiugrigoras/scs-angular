@@ -6,6 +6,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angul
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, retry } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -19,7 +20,7 @@ const apiUrl: string = environment.apiUrl;
 })
 export class AuthService {
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router, private jwtHelper: JwtHelperService) { }
 
   checkUniqueuUsername(username: string): Observable<boolean> {
     return this.http.post<any>(apiUrl + '/api/auth/uniqueusername', { username: username }, httpOptions);
@@ -48,7 +49,6 @@ export class AuthService {
   }
 
   login(user: UserModel, returnUrl: string) {
-    console.log(user, returnUrl);
     this.http.post(apiUrl + '/api/auth/login', user, httpOptions)
       .subscribe(response => {
         const token = (<any>response).accessToken;
@@ -66,5 +66,13 @@ export class AuthService {
     localStorage.removeItem("jwt");
     localStorage.removeItem("refreshToken");
     this.router.navigate(["/"]);
+  }
+
+  getUser(): string {
+    const token = localStorage.getItem("jwt");
+    if (token)
+      return this.jwtHelper.decodeToken(token).unique_name;
+    else
+      return '';
   }
 }

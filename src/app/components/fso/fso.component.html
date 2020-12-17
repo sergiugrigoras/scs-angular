@@ -1,0 +1,27 @@
+<div class="fso" [class.fso-selected]="fso.isSelected" (click)="onClick($event)" (dblclick)="onDblClick()">
+    <div class="fso-box-1">
+        <div *ngIf="fso.isFolder" class="folder-icon-box">
+            <fa-icon [icon]="folderIcon"></fa-icon>
+        </div>
+
+        <div *ngIf="!fso.isFolder" class="file-icon-box">
+            <fa-icon [icon]="fileIcon"></fa-icon>
+        </div>
+        <div *ngIf="!fso.isFolder" class="file-ext-box" [ngStyle]="{'font-size': ext.length < 4? '.8rem': '.6rem'}">{{
+            ext }}</div>
+    </div>
+    <div class="fso-box-2">
+        <div class="fso-info-1">
+            <div class="fso-name">
+                <a *ngIf="fso.isFolder" [routerLink]="['/drive',fso.id]"><span class="folder-name">{{ fso.name
+                        }}</span></a>
+                <span *ngIf="!fso.isFolder" class="file-name">{{ fso.name }}</span>
+            </div>
+
+            <strong><span *ngIf="!fso.isFolder" class="file-size">{{ fso.fileSize | readableBytes }}</span></strong>
+        </div>
+        <div class="fso-info-2">
+            <span>{{ fso.date | date:'medium'}}</span>
+        </div>
+    </div>
+</div>

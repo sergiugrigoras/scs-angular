@@ -1,10 +1,10 @@
 <div class="row">
-    <div class="offset-md-3 col-md-3">
+    <div class="col-md-4">
         <h2>Register</h2>
         <form [formGroup]="form" #registerForm (ngSubmit)="register()">
             <label for="username" class="control-label">Username</label>
             <input formControlName="username" type="text" id="username" class="form-control">
-            <div *ngIf="username!.touched && username!.invalid" class="alert alert-danger">
+            <div *ngIf="(username!.dirty || username!.touched) && username!.invalid" class="alert alert-danger">
                 <div *ngIf="username!.errors!.required"><strong>Username</strong> is required.</div>
                 <div *ngIf="username!.errors!.shouldBeUnique"><strong>Username</strong> is not unique.</div>
             </div>

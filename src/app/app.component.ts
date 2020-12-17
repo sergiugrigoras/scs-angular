@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { faCoffee, faAmbulance } from '@fortawesome/free-solid-svg-icons';
+import { Router } from '@angular/router';
+
 import { AuthService } from './services/auth.service';
 
 @Component({
@@ -10,22 +11,25 @@ import { AuthService } from './services/auth.service';
 export class AppComponent implements OnInit {
 
   title = 'scs';
-  icon1 = faAmbulance;
-
   isLoggedIn: boolean = false;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
-    this.checkLoggedIn();
-  }
-
-  logOut() {
-    this.authService.logout();
+    this.isLoggedIn = this.authService.isAuthenticated();
   }
 
   checkLoggedIn() {
     this.isLoggedIn = this.authService.isAuthenticated();
+  }
+
+  logOut() {
+    this.authService.logout();
+    this.checkLoggedIn();
+  }
+
+  getUser() {
+    return this.authService.getUser();
   }
 
 }

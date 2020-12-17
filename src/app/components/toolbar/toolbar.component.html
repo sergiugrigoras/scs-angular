@@ -1,0 +1,32 @@
+<div class="action-buttons">
+    <button type="button" class="btn" (click)="emitEvent('new')">
+        <fa-icon [icon]="faFolderPlus"></fa-icon>
+    </button>
+    <button type="button" class="btn" (click)="emitEvent('upload')">
+        <fa-icon [icon]="faFileUpload"></fa-icon>
+    </button>
+    <button type="button" class="btn">
+        <fa-icon [icon]="faSortAlphaDown"></fa-icon>
+    </button>
+    <button type="button" class="btn">
+        <fa-icon [icon]="faSortAmountDown"></fa-icon>
+    </button>
+    <button type="button" class="btn">
+        <fa-icon [icon]="faSortNumericDown"></fa-icon>
+    </button>
+    <button type="button" class="btn">
+        <fa-icon [icon]="faList"></fa-icon>
+    </button>
+    <button type="button" class="btn" [disabled]="selectedCount==0" (click)="emitEvent('download')">
+        <fa-icon [icon]="faDownload"></fa-icon>
+    </button>
+    <button type="button" class="btn">
+        <fa-icon [icon]="faShareAlt"></fa-icon>
+    </button>
+    <button type="button" class="btn" [disabled]="selectedCount==0" (click)="emitEvent('delete')">
+        <fa-icon [icon]="faTrashAlt"></fa-icon>
+    </button>
+    <button type="button" class="btn" [disabled]="selectedCount!=1" (click)="emitEvent('rename')">
+        <fa-icon [icon]="faICursor"></fa-icon>
+    </button>
+</div>

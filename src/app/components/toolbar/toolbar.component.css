@@ -1,0 +1,12 @@
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.action-buttons button {
+    font-size: 1.5rem;
+}
+
+.action-buttons button:hover {
+    color: orangered;
+}

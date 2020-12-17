@@ -1,1 +1,59 @@
-<p>drive works!</p>
+<toolbar [selectedCount]="selectedCount" (action)="doAction($event)"></toolbar>
+{{ folder.name }}
+
+<fso *ngFor="let f of content" [fso]="f" (touched)="fsoTouched($event)" (open)="openFolder($event)"></fso>
+
+<input type="file" #inputFiles placeholder="Choose file" (change)="uploadFile(inputFiles.files)" style="display:none;"
+    multiple>
+
+<ng-template #newFolderModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">New Folder</h4>
+        <button type="button" class="btn close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <input type="text" #folderName placeholder="Folder name" class="form-control" id="new-folder-input"
+            [(ngModel)]="newFolderName">
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success" (click)="modal.close()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="addFolder(folderName); modal.dismiss()"
+            [disabled]="newFolderName.length == 0">Add
+            Folder</button>
+    </div>
+</ng-template>
+
+<ng-template #renameConfirmModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Rename</h4>
+        <button type="button" class="btn close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <input type="text" #fsoNewName placeholder="New name" class="form-control" id="rename-input">
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success" (click)="modal.close()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="rename(fsoNewName); modal.dismiss()">Rename</button>
+    </div>
+</ng-template>
+
+<ng-template #deleteConfirmModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm delete</h4>
+        <button type="button" class="btn close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <label class="control-label">Are you sure want to delete {{ selectedCount }} object(s)?</label>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success" (click)="modal.close()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="deleteSelected(); modal.dismiss()"
+            id="confirm-delete-button">Delete</button>
+    </div>
+</ng-template>

@@ -1,12 +1,16 @@
+import { FsoModel } from './../interfaces/fso.interface';
 import { environment } from './../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { map } from 'rxjs/operators';
-import { FsoModel } from '../interfaces/fso.interface';
+import { map, catchError, retry } from 'rxjs/operators';
 
 const apiUrl: string = environment.apiUrl;
-
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type': 'application/json'
+  })
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -15,10 +19,47 @@ export class DriveService {
   constructor(private http: HttpClient, private router: Router) { }
 
   getFso(id: any) {
-    return this.http.get<FsoModel | FsoModel[]>(apiUrl + '/api/fso/' + id);
+    return this.http.get<FsoModel>(apiUrl + '/api/fso/' + id);
   }
 
-  getUserDrive() {
+  getFolderContent(id: any) {
+    return this.http.get<FsoModel[]>(apiUrl + '/api/fso/folder/' + id);
+  }
+
+  getUserDriveId() {
     return this.http.get(apiUrl + '/api/fso/getuserdriveid');
+  }
+
+  addFolder(fso: FsoModel) {
+    return this.http.post<FsoModel>(apiUrl + '/api/fso/addfolder', fso, httpOptions);
+  }
+
+  delete(list: string[]) {
+    let csv = list.join(',');
+    return this.http.delete(apiUrl + '/api/fso/delete', {
+      headers: { 'Content-Type': 'application/json' }, params: { fsoIdcsv: csv }
+    }).pipe(retry(3), map(data => {
+      return data;
+    }));
+  }
+
+  rename(fso: FsoModel) {
+    return this.http.put(apiUrl + '/api/fso/rename', fso, httpOptions);
+  }
+
+  upload(formData: FormData) {
+    // return this.http.post(apiUrl + '/api/fso/upload', formData, { reportProgress: true, observe: 'events' });
+    return this.http.post<FsoModel[]>(apiUrl + '/api/fso/upload', formData, { observe: 'body' });
+  }
+
+  download(list: string[], root: FsoModel) {
+    let csv = list.join(',');
+    let formData = new FormData();
+    formData.append('rootId', String(root.id!));
+    formData.append('fsoIdcsv', csv);
+    return this.http.post<Blob>(apiUrl + '/api/fso/download', formData, {
+      observe: 'body',
+      responseType: 'blob' as 'json',
+    });
   }
 }

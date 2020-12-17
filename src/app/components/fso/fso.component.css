@@ -1,0 +1,73 @@
+.fso-selected {
+    background-color: rgba(0, 123, 255, 0.25);
+}
+
+.fso {
+    border-top: 1px solid #ced4da;
+    display: flex;
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
+    user-select: none;
+    /* Standard */
+}
+
+.fso-info-1 {
+    display: flex;
+}
+
+.fso-name {
+    flex-grow: 1;
+}
+
+.fso-name a {
+    text-decoration: none;
+    color: currentcolor;
+}
+
+.fso-info-2 {
+    font-size: .7rem;
+}
+
+.fso-box-1 {
+    font-size: 2rem;
+    margin: 0 .5rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.fso-box-2 {
+    flex-grow: 1;
+}
+
+.fso-box-3 button {
+    font-size: 1.5rem;
+}
+
+.fso-box-3 button:hover {
+    color: #7291ff;
+}
+
+.folder-icon-box {
+    color: #ffd242;
+}
+
+.file-icon-box {
+    color: #7291ff;
+    z-index: 1;
+}
+
+.file-ext-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    /* font-size: .8rem; */
+    color: white;
+    text-shadow: 2px 2px 2px #00000078;
+}
