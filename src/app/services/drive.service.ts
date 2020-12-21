@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { map, catchError, retry } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 const apiUrl: string = environment.apiUrl;
 const httpOptions = {
@@ -19,7 +20,14 @@ export class DriveService {
   constructor(private http: HttpClient, private router: Router) { }
 
   getFso(id: any) {
-    return this.http.get<FsoModel>(apiUrl + '/api/fso/' + id);
+    return this.http.get<FsoModel>(apiUrl + '/api/fso/' + id).pipe(
+      map(response => {
+        return response
+      }),
+      catchError(error => {
+        return throwError(error)
+      })
+    );
   }
 
   getFolderContent(id: any) {

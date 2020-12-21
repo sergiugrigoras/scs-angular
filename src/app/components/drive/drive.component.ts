@@ -41,11 +41,10 @@ export class DriveComponent implements OnInit {
           if (data.isFolder) {
             this.driveService.getFolderContent(this.id).subscribe(data => {
               this.content = data.sort(this.sortByNameDesc);
-
             });
           }
         }, error => {
-          if (error instanceof HttpErrorResponse && error.status === 401)
+          if (error instanceof HttpErrorResponse && (error.status === 401 || error.status === 404 || error.status === 403))
             this.redirectToRoot();
         });
       } else {
@@ -232,12 +231,6 @@ export class DriveComponent implements OnInit {
         break;
       }
     }
-  }
-
-  sortFso() {
-    this.content.sort(
-
-    );
   }
 
   sortByNameAsc = (a: any, b: any) => {

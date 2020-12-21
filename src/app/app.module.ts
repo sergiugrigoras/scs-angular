@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -20,6 +20,7 @@ import { FsoComponent } from './components/fso/fso.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReadableBytesPipe } from './pipes/readable-bytes.pipe';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
+import { AppErrorHandler } from './model/app-error-handler';
 
 function tokenGetter() {
   return localStorage.getItem("jwt");
@@ -59,6 +60,10 @@ function tokenGetter() {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true,
+    },
+    {
+      provide: ErrorHandler,
+      useClass: AppErrorHandler
     }
   ],
   bootstrap: [AppComponent]

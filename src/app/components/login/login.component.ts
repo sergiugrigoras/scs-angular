@@ -28,7 +28,10 @@ export class LoginComponent implements OnInit {
       email: '',
       password: this.form.get('password')?.value
     };
-    this.authService.login(user, this.returnUrl);
+    this.authService.login(user).subscribe(res => {
+      if (res)
+        this.router.navigate([this.returnUrl]);
+    });
   }
 
 }

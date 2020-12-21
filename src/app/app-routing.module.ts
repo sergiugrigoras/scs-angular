@@ -1,3 +1,4 @@
+import { RegGuard } from './services/reg-guard.service';
 import { DriveComponent } from './components/drive/drive.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
@@ -8,13 +9,10 @@ import { HomeComponent } from './components/home/home.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent, canActivate: [RegGuard] },
+  { path: 'login', component: LoginComponent, canActivate: [RegGuard] },
   { path: 'drive/:id', component: DriveComponent, canActivate: [AuthGuard] },
   { path: 'drive', component: DriveComponent, canActivate: [AuthGuard] },
-  // { path: 'second-component', component: SecondComponent },
-  // { path: 'third-component/:id/:name', component: ThirdComponent },
-
 ];
 
 @NgModule({
