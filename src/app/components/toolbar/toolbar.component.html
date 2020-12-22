@@ -6,13 +6,13 @@
         <fa-icon [icon]="faFileUpload"></fa-icon>
     </button>
     <button type="button" class="btn">
-        <fa-icon [icon]="faSortAlphaDown"></fa-icon>
+        <fa-icon [icon]="faSortAlphaDown" (click)="emitEvent('sortName')"></fa-icon>
     </button>
     <button type="button" class="btn">
-        <fa-icon [icon]="faSortAmountDown"></fa-icon>
+        <fa-icon [icon]="faSortAmountDown" (click)="emitEvent('sortSize')"></fa-icon>
     </button>
     <button type="button" class="btn">
-        <fa-icon [icon]="faSortNumericDown"></fa-icon>
+        <fa-icon [icon]="faSortNumericDown" (click)="emitEvent('sortDate')"></fa-icon>
     </button>
     <button type="button" class="btn">
         <fa-icon [icon]="faList"></fa-icon>

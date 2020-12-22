@@ -20,22 +20,19 @@ export class DriveService {
   constructor(private http: HttpClient, private router: Router) { }
 
   getFso(id: any) {
-    return this.http.get<FsoModel>(apiUrl + '/api/fso/' + id).pipe(
-      map(response => {
-        return response
-      }),
-      catchError(error => {
-        return throwError(error)
-      })
-    );
+    return this.http.get<FsoModel>(apiUrl + '/api/fso/' + id);
   }
 
   getFolderContent(id: any) {
     return this.http.get<FsoModel[]>(apiUrl + '/api/fso/folder/' + id);
   }
 
-  getUserDriveId() {
-    return this.http.get(apiUrl + '/api/fso/getuserdriveid');
+  getFullPath(id: any) {
+    return this.http.get<FsoModel[]>(apiUrl + '/api/fso/fullpath/' + id);
+  }
+
+  getUserDrive() {
+    return this.http.get<FsoModel>(apiUrl + '/api/fso/getuserdrive');
   }
 
   addFolder(fso: FsoModel) {

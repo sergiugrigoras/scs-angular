@@ -21,6 +21,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReadableBytesPipe } from './pipes/readable-bytes.pipe';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
 import { AppErrorHandler } from './model/app-error-handler';
+import { PathbarComponent } from './components/pathbar/pathbar.component';
 
 function tokenGetter() {
   return localStorage.getItem("jwt");
@@ -37,7 +38,8 @@ function tokenGetter() {
     HomeComponent,
     FsoComponent,
     ReadableBytesPipe,
-    ToolbarComponent
+    ToolbarComponent,
+    PathbarComponent
   ],
   imports: [
     BrowserModule,

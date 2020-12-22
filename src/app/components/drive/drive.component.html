@@ -1,6 +1,5 @@
 <toolbar [selectedCount]="selectedCount" (action)="doAction($event)"></toolbar>
-{{ folder.name }}
-
+<pathbar [fullPathArr]="fullPath"></pathbar>
 <fso *ngFor="let f of content" [fso]="f" (touched)="fsoTouched($event)" (open)="openFolder($event)"></fso>
 
 <input type="file" #inputFiles placeholder="Choose file" (change)="uploadFile(inputFiles.files)" style="display:none;"

@@ -1,0 +1,10 @@
+<div class="path-bar">
+    <div *ngFor="let fso of fullPathArr" class="path-bar-elem">
+        <div class="path-bar-folder">
+            <a [routerLink]="['/drive',fso.id]">{{ fso.name }}</a>
+        </div>
+        <div class="path-bar-icon">
+            <fa-icon [icon]="faAngleRight"></fa-icon>
+        </div>
+    </div>
+</div>
