@@ -53,8 +53,8 @@ export class AuthService {
     return this.http.delete(apiUrl + '/api/token/revoke').pipe(
       tap(() => this.doLogoutUser()),
       mapTo(true),
-      catchError(error => {
-        alert(error.error);
+      catchError(() => {
+        this.doLogoutUser();
         return of(false);
       })
     );

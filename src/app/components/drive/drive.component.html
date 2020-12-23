@@ -1,4 +1,11 @@
-<toolbar [selectedCount]="selectedCount" (action)="doAction($event)"></toolbar>
+<div class="row">
+    <div class="col-md-9">
+        <toolbar [selectedCount]="selectedCount" (action)="doAction($event)"></toolbar>
+    </div>
+    <div class="col-md-3">
+        <diskinfo [disk]="disk"></diskinfo>
+    </div>
+</div>
 <pathbar [fullPathArr]="fullPath"></pathbar>
 <fso *ngFor="let f of content" [fso]="f" (touched)="fsoTouched($event)" (open)="openFolder($event)"></fso>
 

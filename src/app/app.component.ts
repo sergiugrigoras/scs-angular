@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { tap } from 'rxjs/operators';
 
 import { AuthService } from './services/auth.service';
 
@@ -23,12 +24,11 @@ export class AppComponent implements OnInit {
     this.isLoggedIn = this.authService.isLoggedIn();
   }
 
-  logOut() {
-    this.authService.logout().subscribe(res => {
-      if (res)
-        this.router.navigate(['']);
-    });
-    this.checkLoggedIn();
+  logout() {
+    this.authService.logout().pipe(tap(() => {
+      this.router.navigate(['/']);
+      this.checkLoggedIn();
+    })).subscribe();
   }
 
   getUser() {

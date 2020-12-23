@@ -22,6 +22,9 @@ import { ReadableBytesPipe } from './pipes/readable-bytes.pipe';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
 import { AppErrorHandler } from './model/app-error-handler';
 import { PathbarComponent } from './components/pathbar/pathbar.component';
+import { DiskinfoComponent } from './components/diskinfo/diskinfo.component';
+import { NotesComponent } from './components/notes/notes.component';
+import { NoteComponent } from './components/note/note.component';
 
 function tokenGetter() {
   return localStorage.getItem("jwt");
@@ -39,7 +42,10 @@ function tokenGetter() {
     FsoComponent,
     ReadableBytesPipe,
     ToolbarComponent,
-    PathbarComponent
+    PathbarComponent,
+    DiskinfoComponent,
+    NotesComponent,
+    NoteComponent
   ],
   imports: [
     BrowserModule,

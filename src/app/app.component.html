@@ -1,4 +1,4 @@
-<app-navigation [isLoggedIn]="isLoggedIn" [user]="getUser()" (LoggedOut)="logOut()"></app-navigation>
+<app-navigation [isLoggedIn]="isLoggedIn" [user]="getUser()" (LoggedOut)="logout()"></app-navigation>
 <div class="container">
     <router-outlet (deactivate)="checkLoggedIn()"></router-outlet>
 </div>

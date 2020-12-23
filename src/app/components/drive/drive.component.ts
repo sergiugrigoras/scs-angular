@@ -1,3 +1,4 @@
+import { DiskModel } from './../../interfaces/disk.interface';
 import { tap, switchMap, catchError, map } from 'rxjs/operators';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { HttpErrorResponse, HttpEventType } from '@angular/common/http';
@@ -21,7 +22,7 @@ export class DriveComponent implements OnInit {
   focusIndex: number = 0;
   newFolderName: string = '';
   fullPath: FsoModel[];
-
+  disk: DiskModel;
   @ViewChild('newFolderModal') newFolderModal?: TemplateRef<any>;
   @ViewChild('renameConfirmModal') renameConfirmModal?: TemplateRef<any>;
   @ViewChild('deleteConfirmModal') deleteConfirmModal?: TemplateRef<any>;
@@ -97,6 +98,7 @@ export class DriveComponent implements OnInit {
       name: '',
       parentId: null
     };
+    this.disk = { usedBytes: 0, totalBytes: 0, diskUsed: 0 }
   }
 
   ngOnInit() {
@@ -108,7 +110,8 @@ export class DriveComponent implements OnInit {
         this.driveService.getFso(this.id).subscribe(fso => {
           this.folder = fso;
           if (fso.isFolder) {
-            this.driveService.getFullPath(this.id).subscribe(res => { this.fullPath = res });
+            this.driveService.getUserDiskInfo().pipe(tap((res) => { this.disk = res })).subscribe();
+            this.driveService.getFullPath(this.id).subscribe((res: FsoModel[]) => { this.fullPath = res });
             this.driveService.getFolderContent(this.id).subscribe(folderContent => {
               this.content = folderContent;
               this.sorter.subscribe(sortFn => {
@@ -135,7 +138,6 @@ export class DriveComponent implements OnInit {
       this.router.navigate([`drive/${fso.id}`]);
     });
   }
-
 
   fsoTouched(event: any) {
     //console.log(event);
@@ -182,6 +184,7 @@ export class DriveComponent implements OnInit {
       parentId: this.id
     }).subscribe(result => {
       this.content.push(result);
+      this.content.sort(this.sortedBy);
     });
   }
 
@@ -193,7 +196,7 @@ export class DriveComponent implements OnInit {
       }
     });
     this.removeFsoFromUI(delArr);
-    this.driveService.delete(delArr).subscribe();
+    this.driveService.delete(delArr).pipe(tap(() => { this.driveService.getUserDiskInfo().pipe(tap((res) => { this.disk = res })).subscribe() })).subscribe();
   }
 
   openModal(options: string) {
@@ -253,17 +256,12 @@ export class DriveComponent implements OnInit {
       formData.append('rootId', String(this.folder.id!));
 
       this.driveService.upload(formData).subscribe(data => {
+        this.driveService.getUserDiskInfo().pipe(tap((res) => { this.disk = res })).subscribe();
         data.forEach(e => {
           this.content.push(e);
-        })
+        });
+        this.content.sort(this.sortedBy);
       });
-      // this.driveService.upload(formData).subscribe(event => {
-      //   if (event.type === HttpEventType.UploadProgress && event.total)
-      //     console.log('progress', Math.round(100 * event.loaded / event.total));
-      //   else if (event.type === HttpEventType.Response) {
-      //     console.log('Upload success.');
-      //   }
-      // });
     }
   }
 

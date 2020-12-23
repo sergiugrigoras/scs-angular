@@ -15,6 +15,9 @@
                 <li *ngIf="isLoggedIn" class="nav-item">
                     <a class="nav-link" routerLink="/drive" routerLinkActive="active">Drive</a>
                 </li>
+                <li *ngIf="isLoggedIn" class="nav-item">
+                    <a class="nav-link" routerLink="/notes" routerLinkActive="active">Notes</a>
+                </li>
             </ul>
             <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
                 <li *ngIf="!isLoggedIn" class="nav-item"><a class="nav-link" routerLink="/register"
@@ -30,7 +33,7 @@
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="#">Profile</a>
                         <div class="dropdown-divider"></div>
-                        <button type="button" class="btn dropdown-item" (click)="logOut()">Logout</button>
+                        <button type="button" class="btn dropdown-item" (click)="logout()">Logout</button>
                     </div>
                 </li>
             </ul>

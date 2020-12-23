@@ -1,3 +1,4 @@
+import { DiskModel } from './../interfaces/disk.interface';
 import { FsoModel } from './../interfaces/fso.interface';
 import { environment } from './../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -35,6 +36,9 @@ export class DriveService {
     return this.http.get<FsoModel>(apiUrl + '/api/fso/getuserdrive');
   }
 
+  getUserDiskInfo() {
+    return this.http.get<DiskModel>(apiUrl + '/api/fso/getuserdiskinfo');
+  }
   addFolder(fso: FsoModel) {
     return this.http.post<FsoModel>(apiUrl + '/api/fso/addfolder', fso, httpOptions);
   }
@@ -53,7 +57,6 @@ export class DriveService {
   }
 
   upload(formData: FormData) {
-    // return this.http.post(apiUrl + '/api/fso/upload', formData, { reportProgress: true, observe: 'events' });
     return this.http.post<FsoModel[]>(apiUrl + '/api/fso/upload', formData, { observe: 'body' });
   }
 

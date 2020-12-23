@@ -1,3 +1,4 @@
+import { NotesComponent } from './components/notes/notes.component';
 import { RegGuard } from './services/reg-guard.service';
 import { DriveComponent } from './components/drive/drive.component';
 import { NgModule } from '@angular/core';
@@ -13,6 +14,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [RegGuard] },
   { path: 'drive/:id', component: DriveComponent, canActivate: [AuthGuard] },
   { path: 'drive', component: DriveComponent, canActivate: [AuthGuard] },
+  { path: 'notes', component: NotesComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({
