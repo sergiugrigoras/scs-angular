@@ -1,2 +1,15 @@
-<h5>{{ note.title }}</h5>
-<p [ngStyle]="{'background-color':'pink'}">{{ note.body }}</p>
+<div class="card" [ngStyle]="{'background-color' : note.color}">
+    <div class="card-body">
+        <h5 class="card-title">{{ note.title }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ note.modificationDate | date:'medium' }}</h6>
+        <p class="card-text">{{ note.body }}</p>
+    </div>
+    <div class="note-btn">
+        <button type="button" (click)="onClick('delete')">
+            <fa-icon [icon]="faTrashAlt"></fa-icon>
+        </button>
+        <button type="button" (click)="onClick('edit')">
+            <fa-icon [icon]="faEdit"></fa-icon>
+        </button>
+    </div>
+</div>

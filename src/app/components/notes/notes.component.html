@@ -1,3 +1,23 @@
-<div *ngFor="let note of notes">
-    <app-note [note]="note"></app-note>
+<div class="note-box">
+    <app-note-editor [note]="activeNoteUpdate" [state]="noteEditorState" (noteEditorEvent)="doAction($event)"
+        (changeState)="changeNoteEditorState($event)">
+    </app-note-editor>
+    <app-note *ngFor="let note of notes" [note]="note" (noteEvent)="doAction($event)"></app-note>
 </div>
+
+<ng-template #deleteConfirmModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm delete</h4>
+        <button type="button" class="btn close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <label class="control-label">Are you sure want to delete <strong>{{ activeNoteDel.title }}</strong> ?</label>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success" (click)="modal.close()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="deleteNote(); modal.dismiss()"
+            id="confirm-delete-button">Delete</button>
+    </div>
+</ng-template>

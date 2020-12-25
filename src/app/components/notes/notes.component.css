@@ -1,0 +1,84 @@
+.note-box {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+
+.plus-button {
+    display: flex;
+    color: rgba(0, 0, 0, .075);
+    font-size: 8rem;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.card {
+    margin: 0.5rem;
+    width: 20rem;
+    height: 24rem;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-text {
+    white-space: pre-line;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.note-btn {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.note-btn button {
+    display: inline;
+    border: none;
+    background: transparent;
+    color: currentcolor;
+    margin: 0.5rem 0.8rem;
+}
+
+.note-btn button:hover {
+    color: red;
+}
+
+.note-btn button:focus {
+    outline: none;
+    transform: scale(1.1);
+}
+
+.note-btn button:active {
+    outline: none;
+    transform: scale(0.9);
+}
+
+input[type=text] {
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid black;
+}
+
+textarea {
+    border: 0;
+    overflow: auto;
+    resize: none;
+    flex-grow: 1;
+}
+
+.form-control:focus, .form-control:active {
+    outline: none;
+    box-shadow: none;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #000000;
+}

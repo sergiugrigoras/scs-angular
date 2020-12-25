@@ -25,6 +25,7 @@ import { PathbarComponent } from './components/pathbar/pathbar.component';
 import { DiskinfoComponent } from './components/diskinfo/diskinfo.component';
 import { NotesComponent } from './components/notes/notes.component';
 import { NoteComponent } from './components/note/note.component';
+import { NoteEditorComponent } from './components/note-editor/note-editor.component';
 
 function tokenGetter() {
   return localStorage.getItem("jwt");
@@ -45,7 +46,8 @@ function tokenGetter() {
     PathbarComponent,
     DiskinfoComponent,
     NotesComponent,
-    NoteComponent
+    NoteComponent,
+    NoteEditorComponent
   ],
   imports: [
     BrowserModule,

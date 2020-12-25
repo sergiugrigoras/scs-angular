@@ -1,0 +1,39 @@
+<div class="card" *ngIf="state === 'read'" (click)="doChangeState('add'); getFocus('add')">
+    <div class="card-body plus-button">
+        <fa-icon [icon]="faPlus"></fa-icon>
+    </div>
+</div>
+
+
+<div class="card" *ngIf="state === 'add'" [ngStyle]="{'background-color':nextColor}">
+    <div class="card-body">
+        <input type="text" class="form-control" placeholder="Title" id="title-text-add"
+            [ngStyle]="{'background-color':nextColor}">
+        <textarea class="form-control" id="body-text-add" [ngStyle]="{'background-color':nextColor}"></textarea>
+    </div>
+    <div class="note-btn">
+        <button type="button" (click)="doChangeState('read')">
+            <fa-icon [icon]="faTimes"></fa-icon>
+        </button>
+        <button type="button" (click)="addNote(); doChangeState('read')">
+            <fa-icon [icon]="faCheck"></fa-icon>
+        </button>
+    </div>
+</div>
+
+<div class="card" *ngIf="state === 'edit'" [ngStyle]="{'background-color':note.color}">
+    <div class="card-body">
+        <input [value]="note.title" type="text" class="form-control" placeholder="Title" id="title-text-edit"
+            [ngStyle]="{'background-color':note.color}">
+        <textarea [value]="note.body" class="form-control" id="body-text-edit"
+            [ngStyle]="{'background-color':note.color}"></textarea>
+    </div>
+    <div class="note-btn">
+        <button type="button" (click)="doChangeState('read')">
+            <fa-icon [icon]="faTimes"></fa-icon>
+        </button>
+        <button type="button" (click)="updateNote(); doChangeState('read')">
+            <fa-icon [icon]="faCheck"></fa-icon>
+        </button>
+    </div>
+</div>
