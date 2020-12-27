@@ -6,6 +6,7 @@ import { AbstractControl, FormControl, FormGroup, ValidationErrors, Validators }
 import { UsernameValidators } from './username.validators';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -20,7 +21,7 @@ export class RegisterComponent implements OnInit {
     confirmPassword: new FormControl('', Validators.required),
   }, PasswordValidators.passwordsShouldMatch);
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
   }
@@ -47,7 +48,10 @@ export class RegisterComponent implements OnInit {
       email: this.email?.value,
       password: this.password?.value
     };
-    this.authService.register(user);
+    this.authService.register(user).subscribe(res => {
+      if (res)
+        this.router.navigate(['/']);
+    });
   }
 
   shouldBeUnique(control: AbstractControl): Observable<ValidationErrors | null> {

@@ -72,7 +72,6 @@ export class NotesComponent implements OnInit {
         this.notes.unshift(res);
       });
     }
-
   }
 
   getNoteById(id: number) {

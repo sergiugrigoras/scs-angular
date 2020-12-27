@@ -1,3 +1,4 @@
+import { AuthService } from 'src/app/services/auth.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -8,9 +9,10 @@ import { Component, OnInit } from '@angular/core';
 export class HomeComponent implements OnInit {
   isLoggedIn: boolean = false;
   user: string = '';
-  constructor() { }
+  constructor(protected authService: AuthService) { }
 
   ngOnInit(): void {
+    this.isLoggedIn = this.authService.isLoggedIn();
   }
 
 }

@@ -1,3 +1,5 @@
+import { environment } from 'src/environments/environment';
+import { ToastService } from './../../services/toast.service';
 import { DiskModel } from './../../interfaces/disk.interface';
 import { tap, switchMap, catchError, map } from 'rxjs/operators';
 import { BehaviorSubject, of, throwError } from 'rxjs';
@@ -8,7 +10,7 @@ import { Component, ElementRef, Inject, OnInit, TemplateRef, ViewChild, Pipe } f
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DOCUMENT } from '@angular/common';
-import { FnParam } from '@angular/compiler/src/output/output_ast';
+
 
 @Component({
   selector: 'app-drive',
@@ -23,6 +25,8 @@ export class DriveComponent implements OnInit {
   newFolderName: string = '';
   fullPath: FsoModel[];
   disk: DiskModel;
+  forbiddenChar: string[];
+  isFsoNameValid: boolean = false;
   @ViewChild('newFolderModal') newFolderModal?: TemplateRef<any>;
   @ViewChild('renameConfirmModal') renameConfirmModal?: TemplateRef<any>;
   @ViewChild('deleteConfirmModal') deleteConfirmModal?: TemplateRef<any>;
@@ -90,7 +94,7 @@ export class DriveComponent implements OnInit {
   sorter: BehaviorSubject<any> = new BehaviorSubject<any>(this.sortByNameAscFn);
   sortedBy: any;
 
-  constructor(private driveService: DriveService, private route: ActivatedRoute, private router: Router, private modalService: NgbModal, @Inject(DOCUMENT) document: any) {
+  constructor(private driveService: DriveService, private route: ActivatedRoute, private router: Router, private modalService: NgbModal, private toastService: ToastService, @Inject(DOCUMENT) document: any) {
     this.fullPath = [];
     this.content = [];
     this.folder = {
@@ -99,10 +103,13 @@ export class DriveComponent implements OnInit {
       parentId: null
     };
     this.disk = { usedBytes: 0, totalBytes: 0, diskUsed: 0 }
+    this.forbiddenChar = ['<', '>', ':', '"', '/', '\\', '|', '?', '*',];
+    for (let i = 0; i <= 31; i++)
+      this.forbiddenChar.unshift(String.fromCharCode(i));
+    this.forbiddenChar.unshift(String.fromCharCode(127));
   }
 
   ngOnInit() {
-
     this.route.paramMap.subscribe(params => {
       if (params.get('id'))
         this.id = +params.get('id')!;
@@ -140,7 +147,6 @@ export class DriveComponent implements OnInit {
   }
 
   fsoTouched(event: any) {
-    //console.log(event);
     if (!event.ctrlKey && !event.shiftKey) {
       let lastTouched = this.content.find(elem => elem.id == event.id);
       if (lastTouched)
@@ -177,10 +183,9 @@ export class DriveComponent implements OnInit {
   }
 
   addFolder(name: HTMLInputElement) {
-
     this.driveService.addFolder({
       isFolder: true,
-      name: name.value,
+      name: name.value.trim(),
       parentId: this.id
     }).subscribe(result => {
       this.content.push(result);
@@ -207,10 +212,10 @@ export class DriveComponent implements OnInit {
           document.getElementById('new-folder-input')?.focus();
         });
         modalRef.dismissed.subscribe(() => {
-          this.newFolderName = '';
+          this.resetFields();
         });
         modalRef.closed.subscribe(() => {
-          this.newFolderName = '';
+          this.resetFields();
         });
         break;
       }
@@ -231,6 +236,12 @@ export class DriveComponent implements OnInit {
             htmlInput.focus();
           }
         });
+        modalRef.dismissed.subscribe(() => {
+          this.resetFields();
+        });
+        modalRef.closed.subscribe(() => {
+          this.resetFields();
+        });
         break;
       }
       default: {
@@ -247,21 +258,39 @@ export class DriveComponent implements OnInit {
     }
   }
 
-  uploadFile = (files: FileList | null) => {
+  async uploadFile(files: FileList | null) {
     if (files) {
+      let fileAlreadyExists = false;
+      let totalSize = 0;
       const formData = new FormData();
+      let disk = await this.driveService.getUserDiskInfo().toPromise();
       Array.from(files).map((file, index) => {
+        if (this.content.find(elem => elem.name === file.name))
+          fileAlreadyExists = true;
+
+        totalSize += file.size;
         return formData.append('file' + index, file, file.name);
       });
-      formData.append('rootId', String(this.folder.id!));
+      if (fileAlreadyExists) {
+        this.toastService.show('Error', 'File already exists', 'bg-danger');
+      }
+      else if ((totalSize + +disk.usedBytes) > +disk.totalBytes) {
 
-      this.driveService.upload(formData).subscribe(data => {
-        this.driveService.getUserDiskInfo().pipe(tap((res) => { this.disk = res })).subscribe();
-        data.forEach(e => {
-          this.content.push(e);
+        this.toastService.show('Error', 'Not enough space', 'bg-danger');
+      }
+      else if (totalSize > environment.maxUploadSize) {
+        this.toastService.show('Error', 'Max file(s) size 100MB', 'bg-danger');
+      }
+      else {
+        formData.append('rootId', String(this.folder.id!));
+        this.driveService.upload(formData).subscribe(data => {
+          this.driveService.getUserDiskInfo().pipe(tap((res) => { this.disk = res })).subscribe();
+          data.forEach(e => {
+            this.content.push(e);
+          });
+          this.content.sort(this.sortedBy);
         });
-        this.content.sort(this.sortedBy);
-      });
+      }
     }
   }
 
@@ -278,7 +307,7 @@ export class DriveComponent implements OnInit {
     if (fsoArr.length == 1 && !fsoArr[0].isFolder)
       downloadFileName = fsoArr[0].name;
     else
-      downloadFileName = 'files.zip';
+      downloadFileName = `files-${Date.now()}`;
 
     this.driveService.download(fsoIdArr, this.folder).subscribe(blob => {
       var FileSaver = require('file-saver');
@@ -344,6 +373,34 @@ export class DriveComponent implements OnInit {
     }
   }
 
+  checkFsoName(input: HTMLInputElement, keyEvent: KeyboardEvent) {
+
+    if (this.validKeyCode(keyEvent.code)) {
+      this.isFsoNameValid = true;
+      let name = input.value.trim();
+      if (name.length == 0) {
+        this.isFsoNameValid = false;
+      }
+      if (name.slice(-1) == '.') {
+        this.isFsoNameValid = false;
+        this.toastService.show('Error', 'Name can\'t end in period', 'bg-warning');
+      }
+      if (this.forbiddenChar.some(c => name.includes(c))) {
+        this.isFsoNameValid = false;
+        this.toastService.show('Error', 'Name contains invalid characters', 'bg-warning');
+      }
+      let fso = this.content.find(elem => elem.name.toLowerCase() === name.toLowerCase());
+      if (fso) {
+        this.isFsoNameValid = false;
+        this.toastService.show('Error', 'Already exists', 'bg-warning');
+      }
+    }
+  }
+
+  private resetFields() {
+    this.isFsoNameValid = false;
+    this.newFolderName = '';
+  }
   private between(x: number, val1: number, val2: number): boolean {
     if (val1 <= val2)
       return x >= val1 && x <= val2;
@@ -360,7 +417,13 @@ export class DriveComponent implements OnInit {
       }
     });
   }
-
+  private validKeyCode(code: string): boolean {
+    let keyCodeArr = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', 'Insert', 'AltLeft', 'ShiftLeft', 'ControlLeft', 'AltRight', 'ControlRight', 'ShiftRight', 'PrintScreen', 'ScrollLock', 'Pause'];
+    if (keyCodeArr.includes(code))
+      return false;
+    else
+      return true;
+  }
   get selectedCount() {
     let c = 0;
     this.content.forEach(elem => {

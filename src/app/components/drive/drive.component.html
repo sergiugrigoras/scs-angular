@@ -1,12 +1,14 @@
-<div class="row">
-    <div class="col-md-9">
-        <toolbar [selectedCount]="selectedCount" (action)="doAction($event)"></toolbar>
+<div class="tool-bar">
+    <div class="row">
+        <div class="col-md-9">
+            <toolbar [selectedCount]="selectedCount" (action)="doAction($event)"></toolbar>
+        </div>
+        <div class="col-md-3">
+            <diskinfo [disk]="disk"></diskinfo>
+        </div>
     </div>
-    <div class="col-md-3">
-        <diskinfo [disk]="disk"></diskinfo>
-    </div>
+    <pathbar [fullPathArr]="fullPath"></pathbar>
 </div>
-<pathbar [fullPathArr]="fullPath"></pathbar>
 <fso *ngFor="let f of content" [fso]="f" (touched)="fsoTouched($event)" (open)="openFolder($event)"></fso>
 
 <input type="file" #inputFiles placeholder="Choose file" (change)="uploadFile(inputFiles.files)" style="display:none;"
@@ -21,12 +23,13 @@
     </div>
     <div class="modal-body">
         <input type="text" #folderName placeholder="Folder name" class="form-control" id="new-folder-input"
-            [(ngModel)]="newFolderName">
+            [(ngModel)]="newFolderName" (keyup)="checkFsoName(folderName,$event)"
+            (keyup.enter)="confirmNewFolderButton.click()">
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-success" (click)="modal.close()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="addFolder(folderName); modal.dismiss()"
-            [disabled]="newFolderName.length == 0">Add
+        <button #confirmNewFolderButton type="button" class="btn btn-primary"
+            (click)="addFolder(folderName); modal.dismiss()" [disabled]="!isFsoNameValid">Add
             Folder</button>
     </div>
 </ng-template>
@@ -39,11 +42,13 @@
         </button>
     </div>
     <div class="modal-body">
-        <input type="text" #fsoNewName placeholder="New name" class="form-control" id="rename-input">
+        <input type="text" (keyup)="checkFsoName(fsoNewName,$event)" #fsoNewName placeholder="New name"
+            class="form-control" id="rename-input" (keyup.enter)="confirmRenameButton.click()">
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-success" (click)="modal.close()">Cancel</button>
-        <button type="button" class="btn btn-danger" (click)="rename(fsoNewName); modal.dismiss()">Rename</button>
+        <button #confirmRenameButton type="button" class="btn btn-danger" (click)="rename(fsoNewName); modal.dismiss()"
+            [disabled]="!isFsoNameValid">Rename</button>
     </div>
 </ng-template>
 

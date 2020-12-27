@@ -1,0 +1,4 @@
+<ngb-toast *ngFor="let toast of toasts" [header]="toast.header" [animation]="true" [autohide]="true"
+    [delay]="toast.delay || 5000" (hidden)="remove(toast)" [ngClass]="toast.classes">
+    {{ toast.body }}
+</ngb-toast>

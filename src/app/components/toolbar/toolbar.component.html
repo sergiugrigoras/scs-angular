@@ -1,32 +1,32 @@
 <div class="action-buttons">
     <button type="button" class="btn" (click)="emitEvent('new')">
-        <fa-icon [icon]="faFolderPlus"></fa-icon>
+        <fa-icon [icon]="faFolderPlus" ngbTooltip="New folder"></fa-icon>
     </button>
     <button type="button" class="btn" (click)="emitEvent('upload')">
-        <fa-icon [icon]="faFileUpload"></fa-icon>
+        <fa-icon [icon]="faFileUpload" ngbTooltip="Upload file"></fa-icon>
     </button>
-    <button type="button" class="btn">
-        <fa-icon [icon]="faSortAlphaDown" (click)="emitEvent('sortName')"></fa-icon>
+    <button type="button" class="btn" (click)="emitEvent('sortName')">
+        <fa-icon [icon]="faSortAlphaDown" ngbTooltip="Sort by name"></fa-icon>
     </button>
-    <button type="button" class="btn">
-        <fa-icon [icon]="faSortAmountDown" (click)="emitEvent('sortSize')"></fa-icon>
+    <button type="button" class="btn" (click)="emitEvent('sortSize')">
+        <fa-icon [icon]="faSortAmountDown" ngbTooltip="Sort by size"></fa-icon>
     </button>
-    <button type="button" class="btn">
-        <fa-icon [icon]="faSortNumericDown" (click)="emitEvent('sortDate')"></fa-icon>
+    <button type="button" class="btn" (click)="emitEvent('sortDate')">
+        <fa-icon [icon]="faSortNumericDown" ngbTooltip="Sort by date"></fa-icon>
     </button>
-    <button type="button" class="btn">
-        <fa-icon [icon]="faList"></fa-icon>
+    <button type="button" class="btn" disabled>
+        <fa-icon [icon]="faList" ngbTooltip="Change view"></fa-icon>
     </button>
     <button type="button" class="btn" [disabled]="selectedCount==0" (click)="emitEvent('download')">
-        <fa-icon [icon]="faDownload"></fa-icon>
+        <fa-icon [icon]="faDownload" ngbTooltip="Download"></fa-icon>
     </button>
-    <button type="button" class="btn">
-        <fa-icon [icon]="faShareAlt"></fa-icon>
+    <button type="button" class="btn" disabled>
+        <fa-icon [icon]="faShareAlt" ngbTooltip="Share"></fa-icon>
     </button>
     <button type="button" class="btn" [disabled]="selectedCount==0" (click)="emitEvent('delete')">
-        <fa-icon [icon]="faTrashAlt"></fa-icon>
+        <fa-icon [icon]="faTrashAlt" ngbTooltip="Delete"></fa-icon>
     </button>
     <button type="button" class="btn" [disabled]="selectedCount!=1" (click)="emitEvent('rename')">
-        <fa-icon [icon]="faICursor"></fa-icon>
+        <fa-icon [icon]="faICursor" ngbTooltip="Rename"></fa-icon>
     </button>
 </div>

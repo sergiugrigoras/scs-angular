@@ -27,7 +27,7 @@
 .card-text {
     white-space: pre-line;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .note-btn {

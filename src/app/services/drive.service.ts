@@ -51,7 +51,6 @@ export class DriveService {
       return data;
     }));
   }
-
   rename(fso: FsoModel) {
     return this.http.put(apiUrl + '/api/fso/rename', fso, httpOptions);
   }
@@ -59,7 +58,6 @@ export class DriveService {
   upload(formData: FormData) {
     return this.http.post<FsoModel[]>(apiUrl + '/api/fso/upload', formData, { observe: 'body' });
   }
-
   download(list: string[], root: FsoModel) {
     let csv = list.join(',');
     let formData = new FormData();
