@@ -27,6 +27,7 @@ export class DriveComponent implements OnInit {
   disk: DiskModel;
   forbiddenChar: string[];
   isFsoNameValid: boolean = false;
+  view: string = '';
   @ViewChild('newFolderModal') newFolderModal?: TemplateRef<any>;
   @ViewChild('renameConfirmModal') renameConfirmModal?: TemplateRef<any>;
   @ViewChild('deleteConfirmModal') deleteConfirmModal?: TemplateRef<any>;
@@ -125,6 +126,13 @@ export class DriveComponent implements OnInit {
                 this.content = this.content.sort(sortFn);
                 this.sortedBy = sortFn;
               });
+              let view = localStorage.getItem(`view-${this.id}`);
+              if (view)
+                this.view = view;
+              else {
+                this.view = 'listView';
+                localStorage.setItem(`view-${this.id}`, 'listView');
+              }
             });
           } else {
             this.router.navigate([`drive/${fso.parentId}`]);
@@ -364,6 +372,21 @@ export class DriveComponent implements OnInit {
         } else {
           this.sorter.next(this.sortByDateAscFn);
           this.sortedBy = this.sortByDateAscFn;
+        }
+        break;
+      }
+      case 'changeView': {
+        if (this.view === 'listView') {
+          this.view = 'iconView';
+          localStorage.setItem(`view-${this.id}`, 'iconView');
+        }
+        else if (this.view === 'iconView') {
+          this.view = 'listView';
+          localStorage.setItem(`view-${this.id}`, 'listView');
+        }
+        else {
+          this.view = 'listView';
+          localStorage.setItem(`view-${this.id}`, 'listView');
         }
         break;
       }

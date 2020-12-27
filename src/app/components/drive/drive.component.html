@@ -9,7 +9,13 @@
     </div>
     <pathbar [fullPathArr]="fullPath"></pathbar>
 </div>
-<fso *ngFor="let f of content" [fso]="f" (touched)="fsoTouched($event)" (open)="openFolder($event)"></fso>
+
+<div *ngIf="view === 'listView'">
+    <fso *ngFor="let f of content" [fso]="f" (touched)="fsoTouched($event)" (open)="openFolder($event)"></fso>
+</div>
+<div *ngIf="view === 'iconView'" class="icon-view-box">
+    <fso-alt *ngFor="let f of content" [fso]="f" (touched)="fsoTouched($event)" (open)="openFolder($event)"></fso-alt>
+</div>
 
 <input type="file" #inputFiles placeholder="Choose file" (change)="uploadFile(inputFiles.files)" style="display:none;"
     multiple>

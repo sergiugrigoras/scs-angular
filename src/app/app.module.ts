@@ -27,6 +27,7 @@ import { NotesComponent } from './components/notes/notes.component';
 import { NoteComponent } from './components/note/note.component';
 import { NoteEditorComponent } from './components/note-editor/note-editor.component';
 import { ToastsComponent } from './components/toasts/toasts.component';
+import { FsoAltComponent } from './components/fso-alt/fso-alt.component';
 
 function tokenGetter() {
   return localStorage.getItem("jwt");
@@ -49,7 +50,8 @@ function tokenGetter() {
     NotesComponent,
     NoteComponent,
     NoteEditorComponent,
-    ToastsComponent
+    ToastsComponent,
+    FsoAltComponent
   ],
   imports: [
     BrowserModule,

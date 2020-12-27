@@ -9,3 +9,9 @@
     border: 1px solid #ced4da;
     margin-bottom: 1rem;
 }
+
+.icon-view-box {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: left;
+}

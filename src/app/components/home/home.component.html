@@ -1,3 +1,18 @@
 <h1>Welcome to SCS</h1>
 <p *ngIf="!isLoggedIn">Please <a routerLink="/register">Register</a> or <a routerLink="/login">Login</a>
 </p>
+
+<div *ngIf="isLoggedIn">
+    <div class="items-box">
+
+        <div class="item" routerLink="/drive">
+            <fa-icon [icon]="faHdd"></fa-icon>
+            <div>Drive</div>
+        </div>
+
+        <div class="item" routerLink="/notes">
+            <fa-icon [icon]="faStickyNote"></fa-icon>
+            <div>Notes</div>
+        </div>
+    </div>
+</div>

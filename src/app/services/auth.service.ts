@@ -43,8 +43,7 @@ export class AuthService {
       .pipe(
         tap(tokens => this.doLoginUser(user.username, tokens)),
         mapTo(true),
-        catchError(error => {
-          alert(error.error);
+        catchError(() => {
           return of(false);
         }));
   }
