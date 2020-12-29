@@ -9,5 +9,7 @@
         <div class="file-ext-box" [ngStyle]="{'font-size': ext.length < 4? '3rem': '2.5rem'}">{{
             ext }}</div>
     </div>
-    <div class="fso-title" [title]="fso.name">{{ fso.name }}</div>
+    <div *ngIf="fso.isFolder" class="fso-title" [title]="fso.name"><a [routerLink]="['/drive',fso.id]">{{ fso.name
+            }}</a></div>
+    <div *ngIf="!fso.isFolder" class="fso-title" [title]="fso.name">{{ fso.name }}</div>
 </div>

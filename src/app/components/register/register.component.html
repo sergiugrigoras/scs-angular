@@ -12,6 +12,8 @@
             <input formControlName="email" type="email" id="email" class="form-control">
             <div *ngIf="email!.touched && email!.invalid" class="alert alert-danger">
                 <div *ngIf="email!.errors!.required"><strong>Email</strong> is required.</div>
+                <div *ngIf="email!.errors!.email">Invalid email address</div>
+                <div *ngIf="email!.errors!.shouldBeUnique"><strong>Email</strong> is not unique.</div>
             </div>
             <label for="password" class="control-label">Password</label>
             <input formControlName="password" type="password" id="password" class="form-control">
@@ -29,8 +31,8 @@
                     match</div>
             </div>
             <br>
-            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Register</button>
-            <button type="button" class="btn btn-success" (click)="registerForm.reset()">Reset</button>
+            <button type="button" class="btn btn-success" (click)="registerForm.reset()">Reset</button>&nbsp;
+            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Register</button>&nbsp;
         </form>
     </div>
 </div>

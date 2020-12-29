@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
   apiUrl: 'https://scs.sergiug.space',
-  maxUploadSize: 104851000,
+  maxUploadSize: 262144000,
 };

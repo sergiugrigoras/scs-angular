@@ -13,8 +13,8 @@ export class DiskinfoComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  getBgClass() {
-    return (this.disk.diskUsed <= 70) ? 'bg-success' : (this.disk.diskUsed <= 90) ? 'bg-warning' : 'bg-danger'
+  getBgType() {
+    return (this.disk.diskUsed <= 70) ? 'success' : (this.disk.diskUsed <= 90) ? 'warning' : 'danger';
   }
 
 }

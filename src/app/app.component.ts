@@ -1,3 +1,4 @@
+import { HomeComponent } from './components/home/home.component';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
@@ -33,6 +34,11 @@ export class AppComponent implements OnInit {
 
   getUser() {
     return this.authService.getUser();
+  }
+
+  onOutletLoaded(event: any) {
+    if (event instanceof HomeComponent)
+      event.isLoggedIn = this.authService.isLoggedIn();
   }
 
 }

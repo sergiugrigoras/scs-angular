@@ -1,9 +1,10 @@
+import { UploadModel } from './../../interfaces/upload.interface';
 import { environment } from 'src/environments/environment';
 import { ToastService } from './../../services/toast.service';
 import { DiskModel } from './../../interfaces/disk.interface';
 import { tap, switchMap, catchError, map } from 'rxjs/operators';
 import { BehaviorSubject, of, throwError } from 'rxjs';
-import { HttpErrorResponse, HttpEventType } from '@angular/common/http';
+import { HttpErrorResponse, HttpEventType, HttpResponse } from '@angular/common/http';
 import { FsoModel } from './../../interfaces/fso.interface';
 import { DriveService } from './../../services/drive.service';
 import { Component, ElementRef, Inject, OnInit, TemplateRef, ViewChild, Pipe } from '@angular/core';
@@ -28,6 +29,15 @@ export class DriveComponent implements OnInit {
   forbiddenChar: string[];
   isFsoNameValid: boolean = false;
   view: string = '';
+  upload: UploadModel = {
+    progress: 0,
+    text: '',
+    isUploading: false,
+    loaded: 0,
+    total: 0,
+    background: 'success',
+  }
+
   @ViewChild('newFolderModal') newFolderModal?: TemplateRef<any>;
   @ViewChild('renameConfirmModal') renameConfirmModal?: TemplateRef<any>;
   @ViewChild('deleteConfirmModal') deleteConfirmModal?: TemplateRef<any>;
@@ -287,17 +297,37 @@ export class DriveComponent implements OnInit {
         this.toastService.show('Error', 'Not enough space', 'bg-danger');
       }
       else if (totalSize > environment.maxUploadSize) {
-        this.toastService.show('Error', 'Max file(s) size 100MB', 'bg-danger');
+        this.toastService.show('Error', 'Max file(s) size 250MB', 'bg-danger');
       }
       else {
         formData.append('rootId', String(this.folder.id!));
-        this.driveService.upload(formData).subscribe(data => {
-          this.driveService.getUserDiskInfo().pipe(tap((res) => { this.disk = res })).subscribe();
-          data.forEach(e => {
-            this.content.push(e);
-          });
+        this.driveService.upload(formData).subscribe(event => {
+          if (event.type === HttpEventType.Response) {
+            (<FsoModel[]>event.body).forEach(e => {
+              this.content.push(e);
+            });
+            this.driveService.getUserDiskInfo().pipe(tap((res) => { this.disk = res })).subscribe();
+            this.upload.text = 'Compleated';
+            setTimeout(() => {
+              this.upload.isUploading = false;
+            }, 2000);
+          }
+          else if (event.type === HttpEventType.UploadProgress && event.total) {
+            this.upload.progress = Math.round(100 * event.loaded / event.total);
+            this.upload.text = String(this.upload.progress) + '%';
+            this.upload.loaded = event.loaded;
+            this.upload.total = event.total;
+            this.upload.isUploading = true;
+          }
           this.content.sort(this.sortedBy);
-        });
+        },
+          () => {
+            this.upload.text = 'Error';
+            this.upload.background = 'danger';
+            setTimeout(() => {
+              this.upload.isUploading = false;
+            }, 2000);
+          });
       }
     }
   }

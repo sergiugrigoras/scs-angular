@@ -1,7 +1,7 @@
 .items-box {
     display: flex;
     flex-flow: row wrap;
-    justify-content: left;
+    justify-content: center;
 }
 
 .item {

@@ -1,6 +1,6 @@
 <app-navigation [isLoggedIn]="isLoggedIn" [user]="getUser()" (LoggedOut)="logout()"></app-navigation>
 <app-toasts aria-live="polite" aria-atomic="true"></app-toasts>
 <div class="container">
-    <router-outlet (deactivate)="checkLoggedIn()"></router-outlet>
+    <router-outlet (deactivate)="checkLoggedIn()" (activate)="onOutletLoaded($event)"></router-outlet>
 </div>
 <app-footer></app-footer>

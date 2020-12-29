@@ -4,7 +4,7 @@ import { environment } from './../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { map, catchError, retry } from 'rxjs/operators';
+import { map, catchError, retry, tap } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 
 const apiUrl: string = environment.apiUrl;
@@ -56,7 +56,7 @@ export class DriveService {
   }
 
   upload(formData: FormData) {
-    return this.http.post<FsoModel[]>(apiUrl + '/api/fso/upload', formData, { observe: 'body' });
+    return this.http.post(apiUrl + '/api/fso/upload', formData, { observe: 'events', reportProgress: true });
   }
   download(list: string[], root: FsoModel) {
     let csv = list.join(',');

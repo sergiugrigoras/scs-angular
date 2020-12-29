@@ -1,14 +1,19 @@
 <div class="tool-bar">
     <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-7">
             <toolbar [selectedCount]="selectedCount" (action)="doAction($event)"></toolbar>
         </div>
         <div class="col-md-3">
+            <upload-progress [upload]="upload">
+            </upload-progress>
+        </div>
+        <div class="col-md-2">
             <diskinfo [disk]="disk"></diskinfo>
         </div>
     </div>
     <pathbar [fullPathArr]="fullPath"></pathbar>
 </div>
+
 
 <div *ngIf="view === 'listView'">
     <fso *ngFor="let f of content" [fso]="f" (touched)="fsoTouched($event)" (open)="openFolder($event)"></fso>

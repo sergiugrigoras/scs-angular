@@ -4,9 +4,9 @@
 
 export const environment = {
   production: false,
-  // apiUrl: 'https://localhost:44361',
+  //apiUrl: 'https://localhost:44361',
   apiUrl: 'https://scs.sergiug.space',
-  maxUploadSize: 104851000,
+  maxUploadSize: 5368709120,
 };
 
 /*

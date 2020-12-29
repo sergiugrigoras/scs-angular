@@ -3,8 +3,8 @@ import { UserModel } from './../interfaces/user.interface';
 import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { interval, Observable, of, throwError } from 'rxjs';
-import { catchError, map, mapTo, retry, tap } from 'rxjs/operators';
+import { interval, Observable, of, Subject, throwError } from 'rxjs';
+import { catchError, debounceTime, map, mapTo, retry, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
@@ -21,14 +21,18 @@ const apiUrl: string = environment.apiUrl;
   providedIn: 'root'
 })
 export class AuthService {
+  isUserLoggedInSubject: Subject<boolean> = new Subject();
   private readonly JWT_TOKEN = 'jwt';
   private readonly REFRESH_TOKEN = 'refreshToken';
   private loggedUser: string = '';
 
   constructor(private http: HttpClient, private jwtHelper: JwtHelperService, private router: Router) { }
 
-  checkUniqueuUsername(username: string): Observable<boolean> {
-    return this.http.post<any>(apiUrl + '/api/auth/uniqueusername', { username: username }, httpOptions);
+  checkUniqueUsername(username: string): Observable<boolean> {
+    return this.http.post<boolean>(apiUrl + '/api/auth/uniqueusername', { username }, httpOptions);
+  }
+  checkUniqueEmail(email: string): Observable<boolean> {
+    return this.http.post<boolean>(apiUrl + '/api/auth/uniqueemail', { email }, httpOptions);
   }
   getUser(): string {
     const token = this.getJwtToken();
@@ -43,9 +47,7 @@ export class AuthService {
       .pipe(
         tap(tokens => this.doLoginUser(user.username, tokens)),
         mapTo(true),
-        catchError(() => {
-          return of(false);
-        }));
+      );
   }
 
   logout() {
@@ -77,9 +79,19 @@ export class AuthService {
 
   refreshToken() {
     const credentials = JSON.stringify({ accessToken: this.getJwtToken(), refreshToken: this.getRefreshToken() });
-    return this.http.post<TokenModel>(apiUrl + '/api/token/refresh', credentials, httpOptions).pipe(tap((tokens: TokenModel) => {
-      this.storeTokens(tokens);
-    }));
+    return this.http.post<TokenModel>(apiUrl + '/api/token/refresh', credentials, httpOptions).pipe(
+      catchError(error => {
+        if (error instanceof HttpErrorResponse && error.status === 400) {
+          this.doLogoutUser();
+          this.router.navigate(['/login']);
+          return throwError(error)
+        } else {
+          return throwError(error);
+        }
+      }),
+      tap((tokens: TokenModel) => {
+        this.storeTokens(tokens);
+      }));
   }
 
   getJwtToken() {
@@ -87,11 +99,13 @@ export class AuthService {
   }
 
   private doLoginUser(username: string, tokens: TokenModel) {
+    this.isUserLoggedInSubject.next(true);
     this.loggedUser = username;
     this.storeTokens(tokens);
   }
 
   private doLogoutUser() {
+    this.isUserLoggedInSubject.next(false);
     this.loggedUser = '';
     this.removeTokens();
   }

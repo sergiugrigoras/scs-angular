@@ -4,7 +4,7 @@
 }
 
 .fso {
-    width: 12rem;
+    width: 11rem;
     border-radius: .1rem;
     margin-right: 1rem;
     margin-bottom: 1rem;
@@ -27,7 +27,7 @@
 
 .icon-box {
     flex-grow: 1;
-    font-size: 10rem;
+    font-size: 9rem;
     text-align: center;
 }
 
@@ -40,11 +40,18 @@
 }
 
 .fso-title {
+    position: relative;
+    top: -1rem;
     text-align: center;
     margin: 0 .5rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.fso-title a {
+    text-decoration: none;
+    color: currentcolor;
 }
 
 .file-box {

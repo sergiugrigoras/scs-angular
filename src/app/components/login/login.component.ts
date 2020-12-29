@@ -1,6 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { UserModel } from './../../interfaces/user.interface';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -10,10 +11,11 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+  badLogin: boolean = false;
   returnUrl: string = '';
   form = new FormGroup({
-    username: new FormControl(),
-    password: new FormControl(),
+    userIdentifier: new FormControl('', Validators.required),
+    password: new FormControl('', Validators.required),
   });
 
   constructor(private authService: AuthService, private route: ActivatedRoute, private router: Router) { }
@@ -23,15 +25,20 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
+    let identifier = this.form.get('userIdentifier')?.value;
     let user: UserModel = {
-      username: this.form.get('username')?.value,
-      email: '',
+      username: String(identifier).includes('@') ? '' : identifier,
+      email: String(identifier).includes('@') ? identifier : '',
       password: this.form.get('password')?.value
     };
     this.authService.login(user).subscribe(res => {
       if (res)
         this.router.navigate([this.returnUrl]);
-    });
+    },
+      error => {
+        if (error instanceof HttpErrorResponse && error.status === 404)
+          this.badLogin = true;
+      });
   }
 
 }

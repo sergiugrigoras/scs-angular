@@ -1,5 +1,5 @@
 import { AuthService } from 'src/app/services/auth.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { faHdd, faStickyNote } from '@fortawesome/free-solid-svg-icons';
 @Component({
   selector: 'app-home',
@@ -11,10 +11,12 @@ export class HomeComponent implements OnInit {
 
   faHdd = faHdd;
   faStickyNote = faStickyNote;
-  constructor(protected authService: AuthService) { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.isLoggedIn = this.authService.isLoggedIn();
+    this.authService.isUserLoggedInSubject.subscribe(val => {
+      this.isLoggedIn = val;
+    }
+    );
   }
-
 }
