@@ -1,7 +1,7 @@
-export interface UploadModel {
+export interface ProgressBarModel {
     progress: number,
     text: string,
-    isUploading: boolean,
+    inProgress: boolean,
     loaded: number,
     total: number,
     background: string,

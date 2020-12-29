@@ -4,8 +4,8 @@
             <toolbar [selectedCount]="selectedCount" (action)="doAction($event)"></toolbar>
         </div>
         <div class="col-md-3">
-            <upload-progress [upload]="upload">
-            </upload-progress>
+            <progress-bar [progressBar]="progressBar">
+            </progress-bar>
         </div>
         <div class="col-md-2">
             <diskinfo [disk]="disk"></diskinfo>

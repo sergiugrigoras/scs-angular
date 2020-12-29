@@ -1,7 +1,0 @@
-<div *ngIf="upload.isUploading">
-    <ngb-progressbar [animated]="true" [type]="upload.background" [value]="upload.progress">{{
-        upload.text }}
-    </ngb-progressbar>
-    <div class="used-bytes">{{ upload.loaded | readableBytesDecimal }}</div>
-    <div class="total-bytes">{{ upload.total | readableBytesDecimal }}</div>
-</div>

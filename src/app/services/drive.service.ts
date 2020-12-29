@@ -1,11 +1,11 @@
 import { DiskModel } from './../interfaces/disk.interface';
 import { FsoModel } from './../interfaces/fso.interface';
 import { environment } from './../../environments/environment';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpEvent } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { map, catchError, retry, tap } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { throwError, Observable } from 'rxjs';
 
 const apiUrl: string = environment.apiUrl;
 const httpOptions = {
@@ -55,16 +55,21 @@ export class DriveService {
     return this.http.put(apiUrl + '/api/fso/rename', fso, httpOptions);
   }
 
-  upload(formData: FormData) {
-    return this.http.post(apiUrl + '/api/fso/upload', formData, { observe: 'events', reportProgress: true });
+  upload(formData: FormData): Observable<HttpEvent<Object>> {
+    return this.http.post(apiUrl + '/api/fso/upload', formData,
+      {
+        observe: 'events',
+        reportProgress: true
+      });
   }
-  download(list: string[], root: FsoModel) {
+  download(list: string[], rootId: number): Observable<HttpEvent<Object>> {
     let csv = list.join(',');
     let formData = new FormData();
-    formData.append('rootId', String(root.id!));
+    formData.append('rootId', String(rootId));
     formData.append('fsoIdcsv', csv);
     return this.http.post<Blob>(apiUrl + '/api/fso/download', formData, {
-      observe: 'body',
+      observe: 'events',
+      reportProgress: true,
       responseType: 'blob' as 'json',
     });
   }

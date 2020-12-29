@@ -1,20 +1,25 @@
 import { AuthService } from 'src/app/services/auth.service';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { faHdd, faStickyNote } from '@fortawesome/free-solid-svg-icons';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   isLoggedIn: boolean = false;
+  isLoggedInSubscription: Subscription = new Subscription();
 
   faHdd = faHdd;
   faStickyNote = faStickyNote;
   constructor(private authService: AuthService) { }
+  ngOnDestroy(): void {
+    this.isLoggedInSubscription.unsubscribe();
+  }
 
   ngOnInit(): void {
-    this.authService.isUserLoggedInSubject.subscribe(val => {
+    this.isLoggedInSubscription = this.authService.isUserLoggedInSubject.subscribe(val => {
       this.isLoggedIn = val;
     }
     );

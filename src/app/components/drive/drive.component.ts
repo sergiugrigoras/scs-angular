@@ -1,24 +1,28 @@
-import { UploadModel } from './../../interfaces/upload.interface';
+import { FsoSortService } from './../../services/fso-sort.service';
+import { ProgressBarModel } from '../../interfaces/progress-bar.interface';
 import { environment } from 'src/environments/environment';
 import { ToastService } from './../../services/toast.service';
 import { DiskModel } from './../../interfaces/disk.interface';
-import { tap, switchMap, catchError, map } from 'rxjs/operators';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { tap, switchMap, catchError, map, filter, mapTo } from 'rxjs/operators';
+import { BehaviorSubject, of, throwError, Subscription } from 'rxjs';
 import { HttpErrorResponse, HttpEventType, HttpResponse } from '@angular/common/http';
 import { FsoModel } from './../../interfaces/fso.interface';
 import { DriveService } from './../../services/drive.service';
-import { Component, ElementRef, Inject, OnInit, TemplateRef, ViewChild, Pipe } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit, TemplateRef, ViewChild, OnDestroy, Pipe } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DOCUMENT } from '@angular/common';
-
 
 @Component({
   selector: 'app-drive',
   templateUrl: './drive.component.html',
   styleUrls: ['./drive.component.css']
 })
-export class DriveComponent implements OnInit {
+export class DriveComponent implements OnInit, OnDestroy {
+
+  private readonly DEFAULT_VIEW = 'listView';
+  private readonly DEFAULT_SORT = this.fsoSortService.sortByNameAscFn;
+
   id: number = -1;
   content: FsoModel[];
   folder: FsoModel;
@@ -29,10 +33,10 @@ export class DriveComponent implements OnInit {
   forbiddenChar: string[];
   isFsoNameValid: boolean = false;
   view: string = '';
-  upload: UploadModel = {
+  progressBar: ProgressBarModel = {
     progress: 0,
     text: '',
-    isUploading: false,
+    inProgress: false,
     loaded: 0,
     total: 0,
     background: 'success',
@@ -42,70 +46,13 @@ export class DriveComponent implements OnInit {
   @ViewChild('renameConfirmModal') renameConfirmModal?: TemplateRef<any>;
   @ViewChild('deleteConfirmModal') deleteConfirmModal?: TemplateRef<any>;
   @ViewChild('inputFiles') inputFiles?: ElementRef;
-  sortByNameAscFn = (a: FsoModel, b: FsoModel) => {
-    let x = a.isFolder;
-    let y = b.isFolder;
-    if (x && y)
-      return a.name.localeCompare(b.name);
-    else if (x || y)
-      return (x) ? -1 : 1;
-    return a.name.localeCompare(b.name);
-  }
 
-  sortByNameDescFn = (a: FsoModel, b: FsoModel) => {
-    let x = a.isFolder;
-    let y = b.isFolder;
-    if (x && y)
-      return b.name.localeCompare(a.name);
-    else if (x || y)
-      return (x) ? 1 : -1;
-    return b.name.localeCompare(a.name);
-  }
-
-  sortBySizeAscFn = (a: FsoModel, b: FsoModel) => {
-    let x = a.isFolder;
-    let y = b.isFolder;
-    if (x && y)
-      return a.name.localeCompare(b.name);
-    else if (x || y)
-      return (x) ? -1 : 1;
-    return (a.fileSize! > b.fileSize!) ? 1 : -1;
-  }
-
-  sortBySizeDescFn = (a: FsoModel, b: FsoModel) => {
-    let x = a.isFolder;
-    let y = b.isFolder;
-    if (x && y)
-      return a.name.localeCompare(b.name);
-    else if (x || y)
-      return (x) ? 1 : -1;
-    return (a.fileSize! > b.fileSize!) ? -1 : 1;
-  }
-
-  sortByDateAscFn = (a: FsoModel, b: FsoModel) => {
-    let x = a.isFolder;
-    let y = b.isFolder;
-    if (x && y)
-      return (a.date! > b.date!) ? 1 : -1
-    else if (x || y)
-      return (x) ? -1 : 1;
-    return (a.date! > b.date!) ? 1 : -1;
-  }
-
-  sortByDateDescFn = (a: FsoModel, b: FsoModel) => {
-    let x = a.isFolder;
-    let y = b.isFolder;
-    if (x && y)
-      return (a.date! > b.date!) ? -1 : 1
-    else if (x || y)
-      return (x) ? 1 : -1;
-    return (a.date! > b.date!) ? -1 : 1;
-  }
-
-  sorter: BehaviorSubject<any> = new BehaviorSubject<any>(this.sortByNameAscFn);
+  sorter: BehaviorSubject<any> = new BehaviorSubject<any>(this.DEFAULT_SORT);
+  sorterSubscription: Subscription = new Subscription();
+  apiCallsSubscription = new Subscription();
   sortedBy: any;
 
-  constructor(private driveService: DriveService, private route: ActivatedRoute, private router: Router, private modalService: NgbModal, private toastService: ToastService, @Inject(DOCUMENT) document: any) {
+  constructor(private fsoSortService: FsoSortService, private driveService: DriveService, private route: ActivatedRoute, private router: Router, private modalService: NgbModal, private toastService: ToastService, @Inject(DOCUMENT) document: any) {
     this.fullPath = [];
     this.content = [];
     this.folder = {
@@ -119,50 +66,108 @@ export class DriveComponent implements OnInit {
       this.forbiddenChar.unshift(String.fromCharCode(i));
     this.forbiddenChar.unshift(String.fromCharCode(127));
   }
+  ngOnDestroy(): void {
+    this.apiCallsSubscription.unsubscribe();
+    this.sorterSubscription.unsubscribe();
+  }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      if (params.get('id'))
-        this.id = +params.get('id')!;
-      if (this.id > 0) {
-        this.driveService.getFso(this.id).subscribe(fso => {
-          this.folder = fso;
-          if (fso.isFolder) {
-            this.driveService.getUserDiskInfo().pipe(tap((res) => { this.disk = res })).subscribe();
-            this.driveService.getFullPath(this.id).subscribe((res: FsoModel[]) => { this.fullPath = res });
-            this.driveService.getFolderContent(this.id).subscribe(folderContent => {
-              this.content = folderContent;
-              this.sorter.subscribe(sortFn => {
-                this.content = this.content.sort(sortFn);
-                this.sortedBy = sortFn;
-              });
-              let view = localStorage.getItem(`view-${this.id}`);
-              if (view)
-                this.view = view;
-              else {
-                this.view = 'listView';
-                localStorage.setItem(`view-${this.id}`, 'listView');
-              }
-            });
-          } else {
-            this.router.navigate([`drive/${fso.parentId}`]);
+    this.apiCallsSubscription = this.route.paramMap
+      .pipe( //get the Id
+        switchMap(params => {
+          let id = params.get('id');
+          if (id)
+            return this.setId(id)
+          else
+            return this.setId();
+        })
+      )
+      .pipe(// get the fso from Id
+        switchMap(id => {
+          return this.driveService.getFso(id)
+        }),
+        catchError(() => { //catch errors like 401, 403, 404
+          return this.driveService.getUserDrive().pipe(
+            tap(fso => this.id = fso.id!)
+          );
+        }),
+        catchError(error => { //if can't get the user drive go to home page
+          this.router.navigate(['/']);
+          return throwError(error);
+        }),
+      )
+      .pipe( //check if fso is a folder
+        switchMap(fso => {
+          if (fso.isFolder)
+            return of(fso)
+          else return this.driveService.getFso(fso.parentId);
+        }),
+        tap(fso => this.id = fso.id!)
+      )
+      .pipe( //get folder content
+        switchMap(fso => {
+          return this.driveService.getFolderContent(fso.id!)
+        }),
+        tap(folderContent => {
+          this.content = folderContent;
+          let view = localStorage.getItem(`view-${this.id}`);
+          if (view)
+            this.view = view;
+          else {
+            this.view = this.DEFAULT_VIEW;
+            localStorage.setItem(`view-${this.id}`, this.DEFAULT_VIEW);
           }
-        }, error => {
-          let httpErrStatus = [401, 403, 404];
-          if (error instanceof HttpErrorResponse && httpErrStatus.includes(error.status))
-            this.redirectToRoot();
-        });
-      } else {
-        this.redirectToRoot();
-      }
-    });
+          this.sorterSubscription = this.sorter.subscribe(sortFn => {
+            this.content = this.content.sort(sortFn);
+            this.sortedBy = sortFn;
+          });
+        }),
+        mapTo(true)
+      )
+      .pipe(
+        switchMap(() => {
+          return this.driveService.getFullPath(this.id);
+        }),
+        tap(fullPath => this.fullPath = fullPath),
+        mapTo(true)
+      )
+      .pipe(
+        switchMap(() => {
+          return this.driveService.getUserDiskInfo();
+        }),
+        tap(disk => this.disk = disk),
+        mapTo(true)
+      )
+      .subscribe();
   }
 
-  redirectToRoot() {
-    this.driveService.getUserDrive().subscribe(fso => {
-      this.router.navigate([`drive/${fso.id}`]);
-    });
+  setId(id?: string) {
+    if (id) {
+      if (isNaN(+id) || +id <= 0 || !Number.isInteger(+id)) {
+        return this.driveService.getUserDrive().pipe(
+          switchMap(fso => {
+            return of(fso.id!)
+          }),
+          tap(id => this.id = id)
+        );
+      }
+      else
+        return of(+id).pipe(
+          tap(id => this.id = id)
+        );
+    }
+    else {
+      return this.driveService.getUserDrive().pipe(
+        switchMap(fso => {
+          return of(fso.id!)
+        }),
+        tap(id => this.id = id)
+      )
+    }
   }
+
+
+
 
   fsoTouched(event: any) {
     if (!event.ctrlKey && !event.shiftKey) {
@@ -285,7 +290,6 @@ export class DriveComponent implements OnInit {
       Array.from(files).map((file, index) => {
         if (this.content.find(elem => elem.name === file.name))
           fileAlreadyExists = true;
-
         totalSize += file.size;
         return formData.append('file' + index, file, file.name);
       });
@@ -300,34 +304,38 @@ export class DriveComponent implements OnInit {
         this.toastService.show('Error', 'Max file(s) size 250MB', 'bg-danger');
       }
       else {
-        formData.append('rootId', String(this.folder.id!));
-        this.driveService.upload(formData).subscribe(event => {
-          if (event.type === HttpEventType.Response) {
-            (<FsoModel[]>event.body).forEach(e => {
-              this.content.push(e);
+        formData.append('rootId', String(this.id));
+        this.driveService.upload(formData)
+          .subscribe(event => {
+            if (event.type === HttpEventType.Response) {
+              (<FsoModel[]>event.body).forEach(e => {
+                this.content.push(e);
+              });
+
+              this.progressBar.text = 'Completed';
+              setTimeout(() => {
+                this.progressBar.inProgress = false;
+              }, 2000);
+            }
+            else if (event.type === HttpEventType.UploadProgress && event.total) {
+              this.progressBar.progress = Math.round(100 * event.loaded / event.total);
+              this.progressBar.text = String(this.progressBar.progress) + '%';
+              this.progressBar.loaded = event.loaded;
+              this.progressBar.total = event.total;
+              this.progressBar.background = 'success'
+              this.progressBar.inProgress = true;
+            }
+            this.content.sort(this.sortedBy);
+          },
+            () => {
+              this.progressBar.text = 'Error';
+              this.progressBar.background = 'danger';
+              setTimeout(() => {
+                this.progressBar.inProgress = false;
+              }, 2000);
+            }, () => {
+              this.driveService.getUserDiskInfo().pipe(tap((res) => { this.disk = res })).subscribe();
             });
-            this.driveService.getUserDiskInfo().pipe(tap((res) => { this.disk = res })).subscribe();
-            this.upload.text = 'Compleated';
-            setTimeout(() => {
-              this.upload.isUploading = false;
-            }, 2000);
-          }
-          else if (event.type === HttpEventType.UploadProgress && event.total) {
-            this.upload.progress = Math.round(100 * event.loaded / event.total);
-            this.upload.text = String(this.upload.progress) + '%';
-            this.upload.loaded = event.loaded;
-            this.upload.total = event.total;
-            this.upload.isUploading = true;
-          }
-          this.content.sort(this.sortedBy);
-        },
-          () => {
-            this.upload.text = 'Error';
-            this.upload.background = 'danger';
-            setTimeout(() => {
-              this.upload.isUploading = false;
-            }, 2000);
-          });
       }
     }
   }
@@ -347,10 +355,33 @@ export class DriveComponent implements OnInit {
     else
       downloadFileName = `files-${Date.now()}`;
 
-    this.driveService.download(fsoIdArr, this.folder).subscribe(blob => {
-      var FileSaver = require('file-saver');
-      FileSaver.saveAs(blob, downloadFileName);
-    });
+    this.driveService.download(fsoIdArr, this.id)
+      .subscribe(event => {
+        if (event.type === HttpEventType.Response) {
+          var FileSaver = require('file-saver');
+          FileSaver.saveAs((<Blob>event.body), downloadFileName);
+          this.progressBar.text = 'Completed';
+          setTimeout(() => {
+            this.progressBar.inProgress = false;
+          }, 2000);
+        }
+        else if (event.type === HttpEventType.DownloadProgress && event.total) {
+          this.progressBar.progress = Math.round(100 * event.loaded / event.total);
+          this.progressBar.text = String(this.progressBar.progress) + '%';
+          this.progressBar.loaded = event.loaded;
+          this.progressBar.total = event.total;
+          this.progressBar.background = 'info'
+          this.progressBar.inProgress = true;
+        }
+      },
+        () => {
+          this.progressBar.text = 'Error';
+          this.progressBar.background = 'danger';
+          setTimeout(() => {
+            this.progressBar.inProgress = false;
+          }, 2000);
+        }
+      );
   }
 
   doAction(event: string) {
@@ -376,32 +407,32 @@ export class DriveComponent implements OnInit {
         break;
       }
       case 'sortName': {
-        if (this.sortedBy === this.sortByNameAscFn) {
-          this.sorter.next(this.sortByNameDescFn);
-          this.sortedBy = this.sortByNameDescFn;
+        if (this.sortedBy === this.fsoSortService.sortByNameAscFn) {
+          this.sorter.next(this.fsoSortService.sortByNameDescFn);
+          this.sortedBy = this.fsoSortService.sortByNameDescFn;
         } else {
-          this.sorter.next(this.sortByNameAscFn);
-          this.sortedBy = this.sortByNameAscFn;
+          this.sorter.next(this.fsoSortService.sortByNameAscFn);
+          this.sortedBy = this.fsoSortService.sortByNameAscFn;
         }
         break;
       }
       case 'sortSize': {
-        if (this.sortedBy === this.sortBySizeAscFn) {
-          this.sorter.next(this.sortBySizeDescFn);
-          this.sortedBy = this.sortBySizeDescFn;
+        if (this.sortedBy === this.fsoSortService.sortBySizeAscFn) {
+          this.sorter.next(this.fsoSortService.sortBySizeDescFn);
+          this.sortedBy = this.fsoSortService.sortBySizeDescFn;
         } else {
-          this.sorter.next(this.sortBySizeAscFn);
-          this.sortedBy = this.sortBySizeAscFn;
+          this.sorter.next(this.fsoSortService.sortBySizeAscFn);
+          this.sortedBy = this.fsoSortService.sortBySizeAscFn;
         }
         break;
       }
       case 'sortDate': {
-        if (this.sortedBy === this.sortByDateAscFn) {
-          this.sorter.next(this.sortByDateDescFn);
-          this.sortedBy = this.sortByDateDescFn;
+        if (this.sortedBy === this.fsoSortService.sortByDateAscFn) {
+          this.sorter.next(this.fsoSortService.sortByDateDescFn);
+          this.sortedBy = this.fsoSortService.sortByDateDescFn;
         } else {
-          this.sorter.next(this.sortByDateAscFn);
-          this.sortedBy = this.sortByDateAscFn;
+          this.sorter.next(this.fsoSortService.sortByDateAscFn);
+          this.sortedBy = this.fsoSortService.sortByDateAscFn;
         }
         break;
       }
@@ -478,11 +509,11 @@ export class DriveComponent implements OnInit {
       return true;
   }
   get selectedCount() {
-    let c = 0;
+    let count = 0;
     this.content.forEach(elem => {
-      if (elem.isSelected) c++
+      if (elem.isSelected) count++
     });
-    return c;
+    return count;
   }
 
 }
