@@ -1,6 +1,6 @@
+import { environment } from './../../../environments/environment';
 import { FsoSortService } from './../../services/fso-sort.service';
 import { ProgressBarModel } from '../../interfaces/progress-bar.interface';
-import { environment } from 'src/environments/environment';
 import { ToastService } from './../../services/toast.service';
 import { DiskModel } from './../../interfaces/disk.interface';
 import { tap, switchMap, catchError, map, filter, mapTo } from 'rxjs/operators';
@@ -23,6 +23,7 @@ export class DriveComponent implements OnInit, OnDestroy {
   private readonly DEFAULT_VIEW = 'listView';
   private readonly DEFAULT_SORT = this.fsoSortService.sortByNameAscFn;
 
+  pageIsReady = false;
   id: number = -1;
   content: FsoModel[];
   folder: FsoModel;
@@ -95,16 +96,12 @@ export class DriveComponent implements OnInit, OnDestroy {
           this.router.navigate(['/']);
           return throwError(error);
         }),
-      )
-      .pipe( //check if fso is a folder
         switchMap(fso => {
           if (fso.isFolder)
             return of(fso)
           else return this.driveService.getFso(fso.parentId);
         }),
-        tap(fso => this.id = fso.id!)
-      )
-      .pipe( //get folder content
+        tap(fso => this.id = fso.id!),
         switchMap(fso => {
           return this.driveService.getFolderContent(fso.id!)
         }),
@@ -120,18 +117,13 @@ export class DriveComponent implements OnInit, OnDestroy {
           this.sorterSubscription = this.sorter.subscribe(sortFn => {
             this.content = this.content.sort(sortFn);
             this.sortedBy = sortFn;
+            this.pageIsReady = true;
           });
         }),
-        mapTo(true)
-      )
-      .pipe(
         switchMap(() => {
           return this.driveService.getFullPath(this.id);
         }),
         tap(fullPath => this.fullPath = fullPath),
-        mapTo(true)
-      )
-      .pipe(
         switchMap(() => {
           return this.driveService.getUserDiskInfo();
         }),
@@ -224,7 +216,17 @@ export class DriveComponent implements OnInit, OnDestroy {
       }
     });
     this.removeFsoFromUI(delArr);
-    this.driveService.delete(delArr).pipe(tap(() => { this.driveService.getUserDiskInfo().pipe(tap((res) => { this.disk = res })).subscribe() })).subscribe();
+    this.driveService.delete(delArr)
+      .pipe(
+        catchError(error => {
+          return throwError(error)
+        }),
+        switchMap(() => {
+          return this.driveService.getUserDiskInfo()
+        }),
+        tap(disk => this.disk = disk)
+      )
+      .subscribe();
   }
 
   openModal(options: string) {
@@ -286,7 +288,8 @@ export class DriveComponent implements OnInit, OnDestroy {
       let fileAlreadyExists = false;
       let totalSize = 0;
       const formData = new FormData();
-      let disk = await this.driveService.getUserDiskInfo().toPromise();
+      //let disk = await this.driveService.getUserDiskInfo().toPromise();
+      let diskUsedBeforeUpload = this.disk.usedBytes;
       Array.from(files).map((file, index) => {
         if (this.content.find(elem => elem.name === file.name))
           fileAlreadyExists = true;
@@ -296,7 +299,7 @@ export class DriveComponent implements OnInit, OnDestroy {
       if (fileAlreadyExists) {
         this.toastService.show('Error', 'File already exists', 'bg-danger');
       }
-      else if ((totalSize + +disk.usedBytes) > +disk.totalBytes) {
+      else if ((totalSize + +this.disk.usedBytes) > +this.disk.totalBytes) {
 
         this.toastService.show('Error', 'Not enough space', 'bg-danger');
       }
@@ -305,7 +308,7 @@ export class DriveComponent implements OnInit, OnDestroy {
       }
       else {
         formData.append('rootId', String(this.id));
-        this.driveService.upload(formData)
+        let uploadSubscription = this.driveService.upload(formData)
           .subscribe(event => {
             if (event.type === HttpEventType.Response) {
               (<FsoModel[]>event.body).forEach(e => {
@@ -318,7 +321,9 @@ export class DriveComponent implements OnInit, OnDestroy {
               }, 2000);
             }
             else if (event.type === HttpEventType.UploadProgress && event.total) {
-              this.progressBar.progress = Math.round(100 * event.loaded / event.total);
+              this.disk.usedBytes = +diskUsedBeforeUpload + +event.loaded;
+              this.disk.diskUsed = Math.round(this.disk.usedBytes * 100 / this.disk.totalBytes)
+              this.progressBar.progress = Math.round(100 * +event.loaded / +event.total);
               this.progressBar.text = String(this.progressBar.progress) + '%';
               this.progressBar.loaded = event.loaded;
               this.progressBar.total = event.total;
@@ -334,11 +339,44 @@ export class DriveComponent implements OnInit, OnDestroy {
                 this.progressBar.inProgress = false;
               }, 2000);
             }, () => {
-              this.driveService.getUserDiskInfo().pipe(tap((res) => { this.disk = res })).subscribe();
+              this.driveService.getUserDiskInfo()
+                .pipe(
+                  tap((res) => {
+                    this.disk = res
+                  }))
+                .subscribe();
+              uploadSubscription.unsubscribe();
             });
       }
     }
   }
+
+  // sendreq(files: FileList | null) {
+  //   const formData = new FormData();
+  //   formData.append('rootId', String(this.id));
+  //   formData.append('file0', files![0], files![0].name);
+  //   var req = new XMLHttpRequest();
+
+  //   if (req.upload) {
+  //     req.onloadstart = e => console.log(e);
+  //     req.upload.onprogress = evt => {
+  //       if (evt.lengthComputable) {
+  //         var percentComplete = ((evt.loaded / evt.total) * 100).toFixed(2);
+  //         console.log("Upload: " + percentComplete + "% complete")
+  //       }
+  //     };
+  //   }
+
+
+  //   req.open('POST', environment.apiUrl + '/api/fso/upload', true);
+  //   req.setRequestHeader('Authorization', 'Bearer ');
+  //   req.onreadystatechange = () => {
+  //     if (req.readyState == 4) {
+  //       console.log('Done');
+  //     }
+  //   };
+  //   req.send(formData);
+  // }
 
   download() {
     let fsoIdArr: string[] = [];

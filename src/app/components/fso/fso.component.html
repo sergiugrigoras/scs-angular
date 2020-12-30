@@ -12,13 +12,13 @@
     </div>
     <div class="fso-box-2">
         <div class="fso-info-1">
-            <div class="fso-name">
-                <a *ngIf="fso.isFolder" [routerLink]="['/drive',fso.id]"><span class="folder-name">{{ fso.name
-                        }}</span></a>
-                <span *ngIf="!fso.isFolder" class="file-name">{{ fso.name }}</span>
-            </div>
+            <span *ngIf="fso.isFolder" class="folder-name" [title]="fso.name">
+                <a [routerLink]="['/drive',fso.id]">{{ fso.name
+                    }}</a></span>
 
-            <strong><span *ngIf="!fso.isFolder" class="file-size">{{ fso.fileSize | readableBytes }}</span></strong>
+            <span *ngIf="!fso.isFolder" class="file-name" [title]="fso.name">{{ fso.name }}</span>
+            <span *ngIf="!fso.isFolder" class="file-size"><strong>{{ fso.fileSize | readableBytes: 0
+                    }}</strong></span>
         </div>
         <div class="fso-info-2">
             <span>{{ fso.date | date:'medium'}}</span>

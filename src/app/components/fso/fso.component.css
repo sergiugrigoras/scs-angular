@@ -15,23 +15,6 @@
     /* Standard */
 }
 
-.fso-info-1 {
-    display: flex;
-}
-
-.fso-name {
-    flex-grow: 1;
-}
-
-.fso-name a {
-    text-decoration: none;
-    color: currentcolor;
-}
-
-.fso-info-2 {
-    font-size: .7rem;
-}
-
 .fso-box-1 {
     font-size: 2rem;
     margin: 0 .5rem;
@@ -44,12 +27,25 @@
     flex-grow: 1;
 }
 
-.fso-box-3 button {
-    font-size: 1.5rem;
+.fso-info-1 {
+    display: flex;
+    justify-content: space-between;
 }
 
-.fso-box-3 button:hover {
-    color: #7291ff;
+.folder-name, .file-name {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    max-width: 60vw;
+}
+
+.folder-name a {
+    text-decoration: none;
+    color: currentcolor;
+}
+
+.fso-info-2 {
+    font-size: .7rem;
 }
 
 .folder-icon-box {
@@ -70,4 +66,8 @@
     /* font-size: .8rem; */
     color: white;
     text-shadow: 2px 2px 2px #00000078;
+}
+
+.file-size {
+    white-space: nowrap;
 }

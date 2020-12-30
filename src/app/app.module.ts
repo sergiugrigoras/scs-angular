@@ -29,7 +29,6 @@ import { NoteEditorComponent } from './components/note-editor/note-editor.compon
 import { ToastsComponent } from './components/toasts/toasts.component';
 import { FsoAltComponent } from './components/fso-alt/fso-alt.component';
 import { UploadProgressComponent } from './components/progress-bar/progress-bar.component';
-import { ReadableBytesDecimalPipe } from './pipes/readable-bytes-decimal.pipe';
 
 function tokenGetter() {
   return localStorage.getItem("jwt");
@@ -55,7 +54,6 @@ function tokenGetter() {
     ToastsComponent,
     FsoAltComponent,
     UploadProgressComponent,
-    ReadableBytesDecimalPipe
   ],
   imports: [
     BrowserModule,
