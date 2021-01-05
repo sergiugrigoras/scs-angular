@@ -41,6 +41,13 @@ export class AuthService {
     else
       return '';
   }
+  getEmail(): string {
+    const token = this.getJwtToken();
+    if (token)
+      return this.jwtHelper.decodeToken(token).email;
+    else
+      return '';
+  }
 
   login(user: UserModel): Observable<boolean> {
     return this.http.post<any>(apiUrl + '/api/auth/login', user)
@@ -48,6 +55,13 @@ export class AuthService {
         tap(tokens => this.doLoginUser(user.username, tokens)),
         mapTo(true),
       );
+  }
+
+  loginWithToken(tokens: TokenModel): Observable<boolean> {
+    return of(tokens).pipe(
+      tap(tokens => this.doLoginUser(this.jwtHelper.decodeToken(tokens.accessToken).unique_name, tokens)),
+      mapTo(true),
+    );
   }
 
   logout() {

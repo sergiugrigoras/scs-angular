@@ -29,6 +29,8 @@ import { NoteEditorComponent } from './components/note-editor/note-editor.compon
 import { ToastsComponent } from './components/toasts/toasts.component';
 import { FsoAltComponent } from './components/fso-alt/fso-alt.component';
 import { UploadProgressComponent } from './components/progress-bar/progress-bar.component';
+import { ProfileComponent } from './components/profile/profile.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 function tokenGetter() {
   return localStorage.getItem("jwt");
@@ -54,6 +56,8 @@ function tokenGetter() {
     ToastsComponent,
     FsoAltComponent,
     UploadProgressComponent,
+    ProfileComponent,
+    ResetPasswordComponent,
   ],
   imports: [
     BrowserModule,

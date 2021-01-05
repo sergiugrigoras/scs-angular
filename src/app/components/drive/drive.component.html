@@ -1,96 +1,95 @@
 <div class="tool-bar">
-    <div class="row">
-        <div class="col-md-7">
-            <toolbar [selectedCount]="selectedCount" (action)="doAction($event)"></toolbar>
-        </div>
-        <div class="col-md-3">
-            <progress-bar [progressBar]="progressBar">
-            </progress-bar>
-        </div>
-        <div class="col-md-2">
-            <diskinfo [disk]="disk"></diskinfo>
-        </div>
+  <div class="row">
+    <div class="col-md-7">
+      <toolbar [selectedCount]="selectedCount" (action)="doAction($event)"></toolbar>
     </div>
-    <pathbar [fullPathArr]="fullPath"></pathbar>
+    <div class="col-md-3">
+      <progress-bar [progressBar]="progressBar">
+      </progress-bar>
+    </div>
+    <div class="col-md-2">
+      <diskinfo [disk]="disk"></diskinfo>
+    </div>
+  </div>
+  <pathbar [fullPathArr]="fullPath"></pathbar>
 </div>
 
-
 <div *ngIf="pageIsReady else loading">
-    <div *ngIf="view === 'listView'">
-        <fso *ngFor="let f of content" [fso]="f" (touched)="fsoTouched($event)" (open)="openFolder($event)"></fso>
-    </div>
-    <div *ngIf="view === 'iconView'" class="icon-view-box">
-        <fso-alt *ngFor="let f of content" [fso]="f" (touched)="fsoTouched($event)" (open)="openFolder($event)">
-        </fso-alt>
-    </div>
+  <div *ngIf="view === 'listView'">
+    <fso *ngFor="let f of content" [fso]="f" (touched)="fsoTouched($event)" (open)="openFolder($event)"></fso>
+  </div>
+  <div *ngIf="view === 'iconView'" class="icon-view-box">
+    <fso-alt *ngFor="let f of content" [fso]="f" (touched)="fsoTouched($event)" (open)="openFolder($event)">
+    </fso-alt>
+  </div>
 </div>
 
 <input type="file" #inputFiles placeholder="Choose file" (change)="uploadFile(inputFiles.files)" style="display:none;"
-    multiple>
+  multiple>
 <!-- <input type="file" #inputFiles placeholder="Choose file" (change)="sendreq(inputFiles.files)" style="display:none;"
     multiple> -->
 <ng-template #loading>
-    <div class="d-flex justify-content-center">
-        <div class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
+  <div class="d-flex justify-content-center">
+    <div class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
     </div>
-    <div class="d-flex justify-content-center" [ngStyle]="{'font-size':'1.5rem'}">
-        Loading...
-    </div>
+  </div>
+  <div class="d-flex justify-content-center" [ngStyle]="{'font-size':'1.5rem'}">
+    Loading...
+  </div>
 </ng-template>
 
 <ng-template #newFolderModal let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title" id="modal-basic-title">New Folder</h4>
-        <button type="button" class="btn close" aria-label="Close" (click)="modal.dismiss()">
-            <span aria-hidden="true">×</span>
-        </button>
-    </div>
-    <div class="modal-body">
-        <input type="text" #folderName placeholder="Folder name" class="form-control" id="new-folder-input"
-            [(ngModel)]="newFolderName" (keyup)="checkFsoName(folderName,$event)"
-            (keyup.enter)="confirmNewFolderButton.click()">
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-success" (click)="modal.close()">Cancel</button>
-        <button #confirmNewFolderButton type="button" class="btn btn-primary"
-            (click)="addFolder(folderName); modal.dismiss()" [disabled]="!isFsoNameValid">Add
-            Folder</button>
-    </div>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">New Folder</h4>
+    <button type="button" class="btn close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <input type="text" #folderName placeholder="Folder name" class="form-control" id="new-folder-input"
+      [(ngModel)]="newFolderName" (keyup)="checkFsoName(folderName,$event)"
+      (keyup.enter)="confirmNewFolderButton.click()">
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success" (click)="modal.close()">Cancel</button>
+    <button #confirmNewFolderButton type="button" class="btn btn-primary"
+      (click)="addFolder(folderName); modal.dismiss()" [disabled]="!isFsoNameValid">Add
+      Folder</button>
+  </div>
 </ng-template>
 
 <ng-template #renameConfirmModal let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title" id="modal-basic-title">Rename</h4>
-        <button type="button" class="btn close" aria-label="Close" (click)="modal.dismiss()">
-            <span aria-hidden="true">×</span>
-        </button>
-    </div>
-    <div class="modal-body">
-        <input type="text" (keyup)="checkFsoName(fsoNewName,$event)" #fsoNewName placeholder="New name"
-            class="form-control" id="rename-input" (keyup.enter)="confirmRenameButton.click()">
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-success" (click)="modal.close()">Cancel</button>
-        <button #confirmRenameButton type="button" class="btn btn-danger" (click)="rename(fsoNewName); modal.dismiss()"
-            [disabled]="!isFsoNameValid">Rename</button>
-    </div>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Rename</h4>
+    <button type="button" class="btn close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <input type="text" (keyup)="checkFsoName(fsoNewName,$event)" #fsoNewName placeholder="New name" class="form-control"
+      id="rename-input" (keyup.enter)="confirmRenameButton.click()">
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success" (click)="modal.close()">Cancel</button>
+    <button #confirmRenameButton type="button" class="btn btn-danger" (click)="rename(fsoNewName); modal.dismiss()"
+      [disabled]="!isFsoNameValid">Rename</button>
+  </div>
 </ng-template>
 
 <ng-template #deleteConfirmModal let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title" id="modal-basic-title">Confirm delete</h4>
-        <button type="button" class="btn close" aria-label="Close" (click)="modal.dismiss()">
-            <span aria-hidden="true">×</span>
-        </button>
-    </div>
-    <div class="modal-body">
-        <label class="control-label">Are you sure want to delete {{ selectedCount }} object(s)?</label>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-success" (click)="modal.close()">Cancel</button>
-        <button type="button" class="btn btn-danger" (click)="deleteSelected(); modal.dismiss()"
-            id="confirm-delete-button">Delete</button>
-    </div>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Confirm delete</h4>
+    <button type="button" class="btn close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <label class="control-label">Are you sure want to delete {{ selectedCount }} object(s)?</label>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success" (click)="modal.close()">Cancel</button>
+    <button type="button" class="btn btn-danger" (click)="deleteSelected(); modal.dismiss()"
+      id="confirm-delete-button">Delete</button>
+  </div>
 </ng-template>

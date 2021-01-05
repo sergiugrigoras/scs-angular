@@ -2,16 +2,24 @@
     <div class="col-md-4">
         <h2>Login</h2>
         <form [formGroup]="form" #loginForm (ngSubmit)="login()">
-            <label for="username" class="control-label">Username or Email</label>
-            <input formControlName="userIdentifier" type="text" id="username" class="form-control">
+            <div class="form-group">
+                <label for="username" class="control-label">Username or Email</label>
+                <input formControlName="userIdentifier" type="text" id="username" class="form-control">
+            </div>
 
-            <label for="password" class="control-label">Password</label>
-            <input formControlName="password" type="password" id="password" class="form-control">
-            <br>
+            <div class="form-group">
+                <label for="password" class="control-label">Password</label>
+                <input formControlName="password" type="password" id="password" class="form-control">
+            </div>
+
             <div *ngIf="badLogin" class="alert alert-danger">
                 Invalid <strong>username</strong> or <strong>password</strong>
             </div>
-            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Login</button>
+
+            <div class="form-group"><button type="submit" class="btn btn-primary"
+                    [disabled]="form.invalid">Login</button>&nbsp;
+                <a type="button" class="btn btn-outline-primary" routerLink="/password/reset">Forgot password</a>
+            </div>
         </form>
     </div>
 </div>
