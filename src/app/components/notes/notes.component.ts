@@ -13,10 +13,11 @@ import { DOCUMENT } from '@angular/common';
 export class NotesComponent implements OnInit {
 
   notes: NoteModel[] = [];
-  activeNoteDel: NoteModel = { title: '', body: '' };
-  activeNoteUpdate: NoteModel = { title: '', body: '' };
+  activeNoteDel: NoteModel = { title: '', body: '', type: '' };
+  activeNoteUpdate: NoteModel = { title: '', body: '', type: '' };
   noteEditorState: string = 'read';
   @ViewChild('deleteConfirmModal') deleteConfirmModal?: TemplateRef<any>;
+  @ViewChild('shareConfirmModal') shareConfirmModal?: TemplateRef<any>;
 
   constructor(private noteService: NoteService, private modalService: NgbModal, @Inject(DOCUMENT) document: any) { }
 
@@ -26,6 +27,11 @@ export class NotesComponent implements OnInit {
         this.notes = notes;
       })
     ).subscribe();
+  }
+  copyUrl(input: HTMLInputElement) {
+    input.focus();
+    input.select();
+    document.execCommand('copy');
   }
 
   openModal(options: any) {
@@ -37,6 +43,18 @@ export class NotesComponent implements OnInit {
         let modalRef = this.modalService.open(this.deleteConfirmModal, { ariaLabelledBy: 'modal-basic-title', animation: true });
         modalRef.shown.subscribe(() => {
           document.getElementById('confirm-delete-button')?.focus();
+        });
+        break;
+      }
+      case 'share': {
+        let modalRef = this.modalService.open(this.shareConfirmModal, { ariaLabelledBy: 'modal-basic-title', animation: true });
+        modalRef.shown.subscribe(() => {
+          let noteUrlInputElement = document.getElementById('share-url');
+          if (noteUrlInputElement instanceof HTMLInputElement) {
+            noteUrlInputElement.value = options.url;
+            noteUrlInputElement.focus();
+            noteUrlInputElement.select();
+          }
         });
         break;
       }
@@ -67,10 +85,19 @@ export class NotesComponent implements OnInit {
       this.noteService.add({
         title: event.note.title,
         body: event.note.body,
-        color: event.note.color
+        color: event.note.color,
+        type: event.note.type,
       }).subscribe(res => {
         this.notes.unshift(res);
       });
+    }
+    else if (event.action === 'share') {
+      this.noteService.share(event.note.id).subscribe(
+        res => this.openModal({
+          action: 'share',
+          url: `${window.location.protocol}//${window.location.hostname}:${window.location.port}/note/${event.note.id}?key=${(<any>res).shareKey}`,
+        })
+      );
     }
   }
 
@@ -78,18 +105,18 @@ export class NotesComponent implements OnInit {
     return this.notes.find(e => e.id! == id);
   }
 
+  deleteNote() {
+    if (this.activeNoteDel) {
+      this.deleteNoteById(this.activeNoteDel.id!);
+      this.noteService.delete(this.activeNoteDel.id!).subscribe();
+    }
+  }
+
   deleteNoteById(id: number) {
     let note = this.getNoteById(id);
     if (note) {
       let index = this.notes.indexOf(note);
       this.notes.splice(index, 1);
-    }
-  }
-
-  deleteNote() {
-    if (this.activeNoteDel) {
-      this.deleteNoteById(this.activeNoteDel.id!);
-      this.noteService.delete(this.activeNoteDel.id!).subscribe();
     }
   }
 

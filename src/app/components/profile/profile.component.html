@@ -37,8 +37,8 @@
                 </div>
             </div>
             <div *ngIf="passwordForm!.errors && newPassword!.dirty && confirmNewPassword!.dirty">
-                <div *ngIf="passwordForm.errors!.passwordsShouldMatch" class="alert alert-danger"><strong>New
-                        passwords</strong> don't
+                <div *ngIf="passwordForm.errors!.passwordsShouldMatch" class="alert alert-danger">
+                    <strong>Passwords</strong> don't
                     match</div>
             </div>
 

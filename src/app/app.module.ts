@@ -31,6 +31,7 @@ import { FsoAltComponent } from './components/fso-alt/fso-alt.component';
 import { UploadProgressComponent } from './components/progress-bar/progress-bar.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { ViewNoteComponent } from './components/view-note/view-note.component';
 
 function tokenGetter() {
   return localStorage.getItem("jwt");
@@ -58,6 +59,7 @@ function tokenGetter() {
     UploadProgressComponent,
     ProfileComponent,
     ResetPasswordComponent,
+    ViewNoteComponent,
   ],
   imports: [
     BrowserModule,

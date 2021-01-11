@@ -17,6 +17,10 @@ export class NoteService {
 
   constructor(private http: HttpClient) { }
 
+  get(id: number, key: string) {
+    return this.http.post<NoteModel>(apiUrl + '/api/note/' + id, { key }, httpOptions);
+  }
+
   getAll() {
     return this.http.get<NoteModel[]>(apiUrl + '/api/note/getall');
   }
@@ -31,5 +35,9 @@ export class NoteService {
 
   delete(id: number) {
     return this.http.delete<any>(apiUrl + '/api/note/delete/' + id);
+  }
+
+  share(id: number) {
+    return this.http.post(apiUrl + '/api/note/share', { id }, httpOptions);
   }
 }

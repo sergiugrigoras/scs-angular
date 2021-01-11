@@ -4,5 +4,6 @@ export interface NoteModel {
     body: string,
     creationDate?: Date,
     modificationDate?: Date,
-    color?: string
+    color?: string,
+    type: string
 }

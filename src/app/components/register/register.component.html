@@ -2,37 +2,49 @@
     <div class="col-md-4">
         <h2>Register</h2>
         <form [formGroup]="form" #registerForm (ngSubmit)="register()">
-            <label for="username" class="control-label">Username</label>
-            <input formControlName="username" type="text" id="username" class="form-control">
+            <div class="form-group">
+                <label for="username" class="control-label">Username</label>
+                <input formControlName="username" type="text" id="username" class="form-control">
+            </div>
             <div *ngIf="(username!.dirty || username!.touched) && username!.invalid" class="alert alert-danger">
                 <div *ngIf="username!.errors!.required"><strong>Username</strong> is required.</div>
                 <div *ngIf="username!.errors!.shouldBeUnique"><strong>Username</strong> is not unique.</div>
             </div>
-            <label for="email" class="control-label">Email</label>
-            <input formControlName="email" type="email" id="email" class="form-control">
-            <div *ngIf="email!.touched && email!.invalid" class="alert alert-danger">
+
+            <div class="form-group">
+                <label for="email" class="control-label">Email</label>
+                <input formControlName="email" type="email" id="email" class="form-control">
+            </div>
+            <div *ngIf="(email!.dirty || email!.touched) && email!.invalid" class="alert alert-danger">
                 <div *ngIf="email!.errors!.required"><strong>Email</strong> is required.</div>
                 <div *ngIf="email!.errors!.email">Invalid email address</div>
                 <div *ngIf="email!.errors!.shouldBeUnique"><strong>Email</strong> is not unique.</div>
             </div>
-            <label for="password" class="control-label">Password</label>
-            <input formControlName="password" type="password" id="password" class="form-control">
+
+            <div class="form-group">
+                <label for="password" class="control-label">Password</label>
+                <input formControlName="password" type="password" id="password" class="form-control">
+            </div>
             <div *ngIf="password!.touched && password!.invalid" class="alert alert-danger">
                 <div *ngIf="password!.errors!.required"><strong>Password</strong> is required</div>
             </div>
-            <label for="confirmPassword" class="control-label">Confirm password</label>
-            <input formControlName="confirmPassword" type="password" id="confirmPassword" class="form-control">
+
+            <div class="form-group">
+                <label for="confirmPassword" class="control-label">Confirm password</label>
+                <input formControlName="confirmPassword" type="password" id="confirmPassword" class="form-control">
+            </div>
             <div *ngIf="confirmPassword!.touched && confirmPassword!.invalid" class="alert alert-danger">
                 <div *ngIf="confirmPassword!.errors!.required"><strong>Confirm Password</strong> is required</div>
             </div>
-
             <div *ngIf="form!.errors && password!.dirty && confirmPassword!.dirty">
                 <div *ngIf="form.errors!.passwordsShouldMatch" class="alert alert-danger">Passwords don't
                     match</div>
             </div>
-            <br>
-            <button type="button" class="btn btn-success" (click)="registerForm.reset()">Reset</button>&nbsp;
-            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Register</button>&nbsp;
+
+            <div class="form-group">
+                <button type="button" class="btn btn-outline-success" (click)="registerForm.reset()">Reset</button>&nbsp;
+                <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Register</button>&nbsp;
+            </div>
         </form>
     </div>
 </div>

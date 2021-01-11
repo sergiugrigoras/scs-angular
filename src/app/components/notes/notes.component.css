@@ -17,6 +17,7 @@
     margin: 0.5rem;
     width: 20rem;
     height: 24rem;
+    color:#16264c;
 }
 
 .card-body {
@@ -30,12 +31,22 @@
     overflow-y: auto;
 }
 
-.note-btn {
-    margin-left: auto;
-    margin-right: 0;
+.card-task{
+    word-break: break-all;
+    white-space: pre-line;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
-.note-btn button {
+.right-to-left-controls {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    /* margin-left: auto;
+    margin-right: 0; */
+}
+
+.note-btn{
     display: inline;
     border: none;
     background: transparent;
@@ -43,36 +54,43 @@
     margin: 0.5rem 0.8rem;
 }
 
-.note-btn button:hover {
+.note-btn:hover {
     color: red;
 }
 
-.note-btn button:focus {
+.note-btn:focus {
     outline: none;
-    transform: scale(1.1);
+    /* transform: scale(1.1); */
 }
 
-.note-btn button:active {
+.note-btn:active {
     outline: none;
     transform: scale(0.9);
 }
 
-input[type=text] {
+.card input[type=text] {
     border: 0;
     border-radius: 0;
-    border-bottom: 1px solid black;
+    font-weight: bold;
+    color:#16264c;
+    /* border-bottom: 1px solid black; */
 }
 
-textarea {
+.card textarea {
     border: 0;
     overflow: auto;
     resize: none;
     flex-grow: 1;
+    color:#16264c;
 }
 
 .form-control:focus, .form-control:active {
     outline: none;
     box-shadow: none;
+}
+
+li{
+    cursor: pointer;
 }
 
 ::-webkit-scrollbar {

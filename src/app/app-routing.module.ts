@@ -9,6 +9,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { AuthGuard } from './services/auth-guard.service';
 import { HomeComponent } from './components/home/home.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { ViewNoteComponent } from './components/view-note/view-note.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -19,6 +20,8 @@ const routes: Routes = [
   { path: 'drive/:id', component: DriveComponent, canActivate: [AuthGuard] },
   { path: 'drive', component: DriveComponent, canActivate: [AuthGuard] },
   { path: 'notes', component: NotesComponent, canActivate: [AuthGuard] },
+  { path: 'note', component: ViewNoteComponent },
+  { path: 'note/:id', component: ViewNoteComponent },
 ];
 
 @NgModule({

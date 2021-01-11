@@ -12,6 +12,7 @@ import { Component, ElementRef, Inject, OnInit, TemplateRef, ViewChild, OnDestro
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DOCUMENT } from '@angular/common';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 @Component({
   selector: 'app-drive',
@@ -53,6 +54,7 @@ export class DriveComponent implements OnInit, OnDestroy {
   sortedBy: any;
 
   constructor(
+    private deviceService: DeviceDetectorService,
     private fsoSortService: FsoSortService,
     private driveService: DriveService,
     private route: ActivatedRoute,
@@ -163,7 +165,7 @@ export class DriveComponent implements OnInit, OnDestroy {
   }
 
   fsoTouched(event: any) {
-    if (!event.ctrlKey && !event.shiftKey) {
+    if (!event.ctrlKey && !event.shiftKey && this.deviceService.isDesktop()) {
       let lastTouched = this.content.find((elem) => elem.id == event.id);
       if (lastTouched) this.focusIndex = this.content.indexOf(lastTouched);
 
@@ -171,12 +173,12 @@ export class DriveComponent implements OnInit, OnDestroy {
         if (elem.id != event.id) elem.isSelected = false;
         else elem.isSelected = true;
       });
-    } else if (event.ctrlKey && !event.shiftKey) {
+    } else if (event.ctrlKey && !event.shiftKey && this.deviceService.isDesktop()) {
       let lastTouched = this.content.find((elem) => elem.id == event.id);
       if (lastTouched) this.focusIndex = this.content.indexOf(lastTouched);
     }
 
-    if (event.shiftKey) {
+    if (event.shiftKey && this.deviceService.isDesktop()) {
       let f = this.content.find((elem) => elem.id == event.id);
       if (f) {
         this.content.forEach((elem) => {
