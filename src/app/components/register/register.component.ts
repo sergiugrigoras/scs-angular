@@ -15,8 +15,8 @@ import { Router } from '@angular/router';
 })
 export class RegisterComponent implements OnInit {
   form = new FormGroup({
-    username: new FormControl('', Validators.required, this.shouldBeUniqueUsername.bind(this)),
-    email: new FormControl('', [Validators.required, Validators.email], this.shouldBeUniqueEmail.bind(this)),
+    username: new FormControl('', [Validators.required, UsernameValidators.checkPattern], this.shouldBeUnique.bind(this)),
+    email: new FormControl('', [Validators.required, Validators.email], this.shouldBeUnique.bind(this)),
     password: new FormControl('', Validators.required),
     confirmPassword: new FormControl('', Validators.required),
   }, PasswordValidators.passwordsShouldMatch);
@@ -54,16 +54,8 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  shouldBeUniqueUsername(control: AbstractControl): Observable<ValidationErrors | null> {
-    return this.authService.checkUniqueUsername(this.form.get('username')?.value)
-      .pipe(map(result => {
-        if (result) return null;
-        else return { shouldBeUnique: true }
-      }));
-  }
-
-  shouldBeUniqueEmail(control: AbstractControl): Observable<ValidationErrors | null> {
-    return this.authService.checkUniqueEmail(this.form.get('email')?.value)
+  shouldBeUnique(control: AbstractControl): Observable<ValidationErrors | null> {
+    return this.authService.checkUniqueLogin(control.value)
       .pipe(map(result => {
         if (result) return null;
         else return { shouldBeUnique: true }

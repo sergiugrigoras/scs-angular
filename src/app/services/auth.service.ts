@@ -28,12 +28,13 @@ export class AuthService {
 
   constructor(private http: HttpClient, private jwtHelper: JwtHelperService, private router: Router) { }
 
-  checkUniqueUsername(username: string): Observable<boolean> {
-    return this.http.post<boolean>(apiUrl + '/api/auth/uniqueusername', { username }, httpOptions);
+  checkUniqueLogin(login: string): Observable<boolean> {
+    if (login.includes('@'))
+      return this.http.post<boolean>(apiUrl + '/api/auth/checkunique', { email: login }, httpOptions);
+    else
+      return this.http.post<boolean>(apiUrl + '/api/auth/checkunique', { username: login }, httpOptions);
   }
-  checkUniqueEmail(email: string): Observable<boolean> {
-    return this.http.post<boolean>(apiUrl + '/api/auth/uniqueemail', { email }, httpOptions);
-  }
+
   getUser(): string {
     const token = this.getJwtToken();
     if (token)

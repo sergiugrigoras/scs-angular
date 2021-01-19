@@ -53,8 +53,8 @@
     <div class="card-body">
         <input [value]="note.title" maxlength="50" type="text" class="form-control" placeholder="Title"
             id="title-text-edit" [ngStyle]="{'background-color':note.color}">
-        <textarea *ngIf="note.type === 'text'" [value]="note.body" class="form-control" id="body-text-edit"
-            [ngStyle]="{'background-color':note.color}"></textarea>
+        <textarea *ngIf="note.type === 'text'" placeholder="Input text here..." [value]="note.body" class="form-control"
+            id="body-text-edit" [ngStyle]="{'background-color':note.color}"></textarea>
         <div *ngIf="note.type === 'task'" id="body-task-edit">
             <div class="right-to-left-controls">
                 <button class="note-btn" type="button" (click)="addTask(updateTaskInput)">

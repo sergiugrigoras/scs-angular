@@ -29,7 +29,6 @@ export class NoteEditorComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.note && this.state === 'edit') {
-      console.log(changes.note.currentValue);
       this.getFocus('edit');
       if (changes.note.currentValue.type === 'task')
         this.tasks = JSON.parse(changes.note.currentValue.body)
@@ -112,6 +111,7 @@ export class NoteEditorComponent implements OnInit, OnChanges {
         }
       });
     }
+
     else if ((title instanceof HTMLInputElement) && (typeof body === 'string')) {
       this.noteEditorEvent.emit({
         action: 'update',
@@ -131,9 +131,9 @@ export class NoteEditorComponent implements OnInit, OnChanges {
   changeType(noteType: string) {
     this.note.type = noteType;
   }
+
   doChangeState(state: string) {
     this.tasks = [];
-    this.note = { title: '', body: '', type: '' };
     this.changeState.emit(state);
   }
 

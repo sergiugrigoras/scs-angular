@@ -122,7 +122,7 @@ export class NotesComponent implements OnInit {
 
   changeNoteEditorState(event: string) {
     this.noteEditorState = event;
+    this.activeNoteUpdate = { title: '', body: '', type: 'text' };
   }
-
 
 }
