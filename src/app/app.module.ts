@@ -32,6 +32,7 @@ import { UploadProgressComponent } from './components/progress-bar/progress-bar.
 import { ProfileComponent } from './components/profile/profile.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ViewNoteComponent } from './components/view-note/view-note.component';
+import { SharedFilesComponent } from './components/shared-files/shared-files.component';
 
 function tokenGetter() {
   return localStorage.getItem("jwt");
@@ -60,6 +61,7 @@ function tokenGetter() {
     ProfileComponent,
     ResetPasswordComponent,
     ViewNoteComponent,
+    SharedFilesComponent,
   ],
   imports: [
     BrowserModule,

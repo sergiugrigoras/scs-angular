@@ -62,12 +62,32 @@ export class DriveService {
         reportProgress: true
       });
   }
-  download(list: string[], rootId: number): Observable<HttpEvent<Object>> {
+  download(list: string[]): Observable<HttpEvent<Object>> {
     let csv = list.join(',');
     let formData = new FormData();
-    formData.append('rootId', String(rootId));
     formData.append('fsoIdcsv', csv);
     return this.http.post<Blob>(apiUrl + '/api/fso/download', formData, {
+      observe: 'events',
+      reportProgress: true,
+      responseType: 'blob' as 'json',
+    });
+  }
+
+  share(list: string[]) {
+    let csv = list.join(',');
+    let formData = new FormData();
+    formData.append('fsoIdcsv', csv);
+    return this.http.post(apiUrl + '/api/share/add', formData, {
+      responseType: 'text'
+    });
+  }
+
+  getShareContent(shareId: string) {
+    return this.http.get<FsoModel[]>(apiUrl + '/api/share/get/' + shareId);
+  }
+
+  downloadShare(shareId: string) {
+    return this.http.get<Blob>(apiUrl + '/api/share/download/' + shareId, {
       observe: 'events',
       reportProgress: true,
       responseType: 'blob' as 'json',

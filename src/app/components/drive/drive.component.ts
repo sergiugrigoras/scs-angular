@@ -375,32 +375,6 @@ export class DriveComponent implements OnInit, OnDestroy {
     }
   }
 
-  // sendreq(files: FileList | null) {
-  //   const formData = new FormData();
-  //   formData.append('rootId', String(this.id));
-  //   formData.append('file0', files![0], files![0].name);
-  //   var req = new XMLHttpRequest();
-
-  //   if (req.upload) {
-  //     req.onloadstart = e => console.log(e);
-  //     req.upload.onprogress = evt => {
-  //       if (evt.lengthComputable) {
-  //         var percentComplete = ((evt.loaded / evt.total) * 100).toFixed(2);
-  //         console.log("Upload: " + percentComplete + "% complete")
-  //       }
-  //     };
-  //   }
-
-  //   req.open('POST', environment.apiUrl + '/api/fso/upload', true);
-  //   req.setRequestHeader('Authorization', 'Bearer ');
-  //   req.onreadystatechange = () => {
-  //     if (req.readyState == 4) {
-  //       console.log('Done');
-  //     }
-  //   };
-  //   req.send(formData);
-  // }
-
   download() {
     let fsoIdArr: string[] = [];
     let fsoArr: FsoModel[] = [];
@@ -415,7 +389,7 @@ export class DriveComponent implements OnInit, OnDestroy {
       downloadFileName = fsoArr[0].name;
     else downloadFileName = `files-${Date.now()}`;
 
-    this.driveService.download(fsoIdArr, this.id).subscribe(
+    this.driveService.download(fsoIdArr).subscribe(
       (event) => {
         if (event.type === HttpEventType.Response) {
           var FileSaver = require('file-saver');
@@ -446,6 +420,18 @@ export class DriveComponent implements OnInit, OnDestroy {
         }, 2000);
       }
     );
+  }
+
+  share() {
+    let fsoIdArr: string[] = [];
+    this.content.forEach((elem) => {
+      if (elem.isSelected) {
+        fsoIdArr.push(String(elem.id!));
+      }
+    });
+    this.driveService.share(fsoIdArr).subscribe(res => {
+      console.log(res);
+    })
   }
 
   doAction(event: string) {
@@ -511,6 +497,10 @@ export class DriveComponent implements OnInit, OnDestroy {
           this.view = 'listView';
           localStorage.setItem(`view-${this.id}`, 'listView');
         }
+        break;
+      }
+      case 'share': {
+        this.share();
         break;
       }
       default: {

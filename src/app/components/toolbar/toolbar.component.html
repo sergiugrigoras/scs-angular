@@ -20,7 +20,7 @@
     <button type="button" class="btn" [disabled]="selectedCount==0" (click)="emitEvent('download')">
         <fa-icon [icon]="faDownload" ngbTooltip="Download"></fa-icon>
     </button>
-    <button type="button" class="btn" disabled>
+    <button type="button" class="btn" [disabled]="selectedCount==0" (click)="emitEvent('share')">
         <fa-icon [icon]="faShareAlt" ngbTooltip="Share"></fa-icon>
     </button>
     <button type="button" class="btn" [disabled]="selectedCount==0" (click)="emitEvent('delete')">

@@ -10,6 +10,7 @@ import { AuthGuard } from './services/auth-guard.service';
 import { HomeComponent } from './components/home/home.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ViewNoteComponent } from './components/view-note/view-note.component';
+import { SharedFilesComponent } from './components/shared-files/shared-files.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'notes', component: NotesComponent, canActivate: [AuthGuard] },
   { path: 'note', component: ViewNoteComponent },
   { path: 'note/:id', component: ViewNoteComponent },
+  { path: 'files/:id', component: SharedFilesComponent },
 ];
 
 @NgModule({

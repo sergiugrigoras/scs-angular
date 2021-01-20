@@ -1,0 +1,5 @@
+<div *ngIf="progress">{{ progress }}%</div>
+<button class="btn btn-primary" (click)="download()">Download</button>
+<ol>
+    <li *ngFor="let fso of content">{{ fso.name }}</li>
+</ol>
