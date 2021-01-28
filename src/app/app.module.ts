@@ -33,6 +33,9 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ViewNoteComponent } from './components/view-note/view-note.component';
 import { SharedFilesComponent } from './components/shared-files/shared-files.component';
+import { SharedFsoComponent } from './components/shared-fso/shared-fso.component';
+import { SharesComponent } from './components/shares/shares.component';
+import { ShareComponent } from './components/share/share.component';
 
 function tokenGetter() {
   return localStorage.getItem("jwt");
@@ -62,6 +65,9 @@ function tokenGetter() {
     ResetPasswordComponent,
     ViewNoteComponent,
     SharedFilesComponent,
+    SharedFsoComponent,
+    SharesComponent,
+    ShareComponent,
   ],
   imports: [
     BrowserModule,

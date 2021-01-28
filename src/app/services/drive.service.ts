@@ -6,7 +6,10 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { map, catchError, retry, tap } from 'rxjs/operators';
 import { throwError, Observable } from 'rxjs';
+import { ShareModel } from '../interfaces/share.interface';
 
+
+const SHARE_URL = `${window.location.protocol}//${window.location.hostname}/files/`;
 const apiUrl: string = environment.apiUrl;
 const httpOptions = {
   headers: new HttpHeaders({
@@ -38,6 +41,10 @@ export class DriveService {
 
   getUserDiskInfo() {
     return this.http.get<DiskModel>(apiUrl + '/api/fso/getuserdiskinfo');
+  }
+
+  getShareUrl(shareId: string) {
+    return `${SHARE_URL}${shareId}`
   }
   addFolder(fso: FsoModel) {
     return this.http.post<FsoModel>(apiUrl + '/api/fso/addfolder', fso, httpOptions);
@@ -73,6 +80,8 @@ export class DriveService {
     });
   }
 
+
+
   share(list: string[]) {
     let csv = list.join(',');
     let formData = new FormData();
@@ -86,11 +95,29 @@ export class DriveService {
     return this.http.get<FsoModel[]>(apiUrl + '/api/share/get/' + shareId);
   }
 
+  getShareInfo(shareId: string) {
+    return this.http.get(apiUrl + '/api/share/getinfo/' + shareId);
+  }
+
+  deleteShare(shareId: string) {
+    return this.http.delete(apiUrl + '/api/share/delete/' + shareId, httpOptions);
+  }
+
+  sendShareEmail(id: string, email: string, url: string) {
+    return this.http.post(apiUrl + '/api/share/sendemail', undefined, {
+      headers: { 'Content-Type': 'application/json' }, params: { id, email, url }
+    });
+  }
+
   downloadShare(shareId: string) {
     return this.http.get<Blob>(apiUrl + '/api/share/download/' + shareId, {
       observe: 'events',
       reportProgress: true,
       responseType: 'blob' as 'json',
     });
+  }
+
+  getAllUsersShares() {
+    return this.http.get<ShareModel[]>(apiUrl + '/api/share/getall');
   }
 }

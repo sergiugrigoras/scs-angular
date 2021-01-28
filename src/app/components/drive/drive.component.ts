@@ -42,10 +42,12 @@ export class DriveComponent implements OnInit, OnDestroy {
     total: 0,
     background: 'success',
   };
-
+  shareId = '';
+  validEmail = false;
   @ViewChild('newFolderModal') newFolderModal?: TemplateRef<any>;
   @ViewChild('renameConfirmModal') renameConfirmModal?: TemplateRef<any>;
   @ViewChild('deleteConfirmModal') deleteConfirmModal?: TemplateRef<any>;
+  @ViewChild('shareConfirmModal') shareConfirmModal?: TemplateRef<any>;
   @ViewChild('inputFiles') inputFiles?: ElementRef;
 
   sorter: BehaviorSubject<any> = new BehaviorSubject<any>(this.DEFAULT_SORT);
@@ -287,6 +289,22 @@ export class DriveComponent implements OnInit, OnDestroy {
         });
         break;
       }
+      case 'share': {
+        let modalRef = this.modalService.open(this.shareConfirmModal, {
+          ariaLabelledBy: 'modal-basic-title',
+          animation: true,
+        });
+        modalRef.shown.subscribe(() => {
+          document.getElementById('confirm-share-button')?.focus();
+        });
+        modalRef.dismissed.subscribe(() => {
+          this.resetFields();
+        });
+        modalRef.closed.subscribe(() => {
+          this.resetFields();
+        });
+        break;
+      }
       default: {
         break;
       }
@@ -422,16 +440,63 @@ export class DriveComponent implements OnInit, OnDestroy {
     );
   }
 
-  share() {
+  shareSelected() {
     let fsoIdArr: string[] = [];
     this.content.forEach((elem) => {
       if (elem.isSelected) {
         fsoIdArr.push(String(elem.id!));
       }
     });
-    this.driveService.share(fsoIdArr).subscribe(res => {
-      console.log(res);
-    })
+    this.driveService.share(fsoIdArr).subscribe(shareId => {
+      this.shareId = shareId;
+    });
+  }
+  getShareUrl(shareId: string) {
+    return this.driveService.getShareUrl(shareId);
+  }
+  copyUrl(input: HTMLInputElement) {
+    input.focus();
+    input.select();
+    document.execCommand('copy');
+    this.toastService.show(
+      'Success',
+      `Copied to clipboard`,
+      'bg-success'
+    );
+  }
+
+  deleteShare() {
+    if (this.shareId)
+      this.driveService.deleteShare(this.shareId).subscribe(res => {
+        this.toastService.show(
+          'Success',
+          `Successfully deleted share: ${(<any>res).shareId}`,
+          'bg-success'
+        );
+      })
+  }
+
+  sendShareEmail(input: HTMLInputElement, shareId: string) {
+    this.driveService.sendShareEmail(shareId, input.value, this.getShareUrl(shareId)).subscribe(() => {
+      this.toastService.show(
+        'Success',
+        `An email has been sent to ${input.value}`,
+        'bg-success'
+      );
+    },
+      () => {
+        this.toastService.show(
+          'Error',
+          `Server error, unabel to send email`,
+          'bg-danger'
+        );
+      }
+    );
+  }
+
+  validateEmail(input: HTMLInputElement) {
+    const regularExpression = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    this.validEmail = regularExpression.test(String(input.value).toLowerCase());
   }
 
   doAction(event: string) {
@@ -500,7 +565,7 @@ export class DriveComponent implements OnInit, OnDestroy {
         break;
       }
       case 'share': {
-        this.share();
+        this.openModal('share');
         break;
       }
       default: {
@@ -520,7 +585,7 @@ export class DriveComponent implements OnInit, OnDestroy {
         this.isFsoNameValid = false;
         this.toastService.show(
           'Error',
-          "Name can't end in period",
+          'Name can\'t end in period',
           'bg-warning'
         );
       }
@@ -545,6 +610,8 @@ export class DriveComponent implements OnInit, OnDestroy {
   private resetFields() {
     this.isFsoNameValid = false;
     this.newFolderName = '';
+    this.shareId = '';
+    this.validEmail = false;
   }
   private between(x: number, val1: number, val2: number): boolean {
     if (val1 <= val2) return x >= val1 && x <= val2;

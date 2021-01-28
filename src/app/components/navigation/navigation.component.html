@@ -18,6 +18,9 @@
                 <li *ngIf="isLoggedIn" class="nav-item">
                     <a class="nav-link" routerLink="/notes" routerLinkActive="active">Notes</a>
                 </li>
+                <li *ngIf="isLoggedIn" class="nav-item">
+                    <a class="nav-link" routerLink="/shares" routerLinkActive="active">Shares</a>
+                </li>
             </ul>
             <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
                 <li *ngIf="!isLoggedIn" class="nav-item"><a class="nav-link" routerLink="/register"

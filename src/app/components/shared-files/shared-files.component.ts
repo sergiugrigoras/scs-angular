@@ -15,6 +15,7 @@ export class SharedFilesComponent implements OnInit {
   id = '';
   content: FsoModel[] = [];
   progress = '';
+  shareInfo: any;
   constructor(private route: ActivatedRoute, private driveService: DriveService,) { }
 
   ngOnInit(): void {
@@ -34,7 +35,11 @@ export class SharedFilesComponent implements OnInit {
       }),
       tap(content => {
         this.content = content;
-      })
+      }),
+      switchMap(() => {
+        return this.driveService.getShareInfo(this.id);
+      }),
+      tap(shareInfo => this.shareInfo = shareInfo)
     ).subscribe();
   }
 
@@ -42,7 +47,7 @@ export class SharedFilesComponent implements OnInit {
     let downloadFileName = '';
     if (this.content.length == 1 && !this.content[0].isFolder)
       downloadFileName = this.content[0].name;
-    else downloadFileName = `files-${Date.now()}`;
+    else downloadFileName = `files-${this.id}`;
 
     this.driveService.downloadShare(this.id).subscribe(
       (event) => {
@@ -58,5 +63,13 @@ export class SharedFilesComponent implements OnInit {
         }
       }
     );
+  }
+
+  getFoldersAndFilesDisplayText() {
+    let foldersText = '';
+    let filesText = '';
+    this.shareInfo.foldersCount > 0 ? this.shareInfo.foldersCount === 1 ? foldersText = `${this.shareInfo.foldersCount} Folder` : foldersText = `${this.shareInfo.foldersCount} Folders` : foldersText = '';
+    this.shareInfo.filesCount > 0 ? this.shareInfo.filesCount === 1 ? filesText = `${this.shareInfo.filesCount} File` : filesText = `${this.shareInfo.filesCount} Files` : filesText = '';
+    return foldersText === '' ? filesText === '' ? 'No Data' : filesText : filesText === '' ? foldersText : `${foldersText}, ${filesText}`;
   }
 }

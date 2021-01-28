@@ -94,3 +94,59 @@
       id="confirm-delete-button">Delete</button>
   </div>
 </ng-template>
+
+<ng-template #shareConfirmModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Confirm share</h4>
+    <button type="button" class="btn close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+  <div class="modal-body">
+
+    <label class="control-label" [hidden]="shareId">Are you sure want to share {{ selectedCount }} object(s)?</label>
+
+    <div class=" form-group" [hidden]="!shareId">
+      <div class="form-row">
+        <div class="col-auto">
+          <label for="share-url" class="control-label">Share Url</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col">
+          <input #url type="text" class="form-control" id="share-url" readonly [value]="getShareUrl(shareId)">
+        </div>
+        <div class="col-auto">
+          <button type="button" class="btn btn-primary" (click)="copyUrl(url); modal.dismiss()" [hidden]="!shareId">Copy
+            URL</button>
+        </div>
+      </div>
+    </div>
+
+    <div class=" form-group" [hidden]="!shareId">
+      <div class="form-row">
+        <div class="col">
+          <label for="share-email" class="control-label">Email</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col">
+          <input #email type="email" (keyup)="validateEmail(email)" class="form-control" id="share-email"
+            placeholder="Email address">
+        </div>
+        <div class="col-auto">
+          <button type="button" class="btn btn-primary" (click)="sendShareEmail(email,shareId); modal.dismiss()"
+            [hidden]="!shareId" [disabled]="!validEmail">Send
+            Email</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success" (click)="modal.close()">Cancel</button>
+    <button type="button" class="btn btn-danger" (click)="deleteShare(); modal.dismiss()"
+      [hidden]="!shareId">Delete</button>
+    <button type="button" class="btn btn-danger" (click)="shareSelected()" [hidden]="shareId">Share</button>
+  </div>
+</ng-template>

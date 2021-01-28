@@ -1,0 +1,27 @@
+<h2>Shares</h2>
+<ngb-accordion [closeOthers]="true" #acc="ngbAccordion">
+    <ngb-panel *ngFor="let share of shares; index as i" [id]="'share-'+i">
+        <ng-template ngbPanelHeader let-opened="opened">
+            <div class="d-flex align-items-center justify-content-between" [ngStyle]="{'cursor': 'pointer'}">
+                <fa-icon [icon]="opened ? faChevronDown : faChevronRight" (click)="acc.toggle('share-'+i)"></fa-icon>
+                <h5 class="container-fluid text-left" (click)="acc.toggle('share-'+i)">{{ share.publicId }}</h5>
+
+                <button class="btn" [id]="'cancel-btn-'+i" (click)="cancelBtnClick(i)" hidden>
+                    <fa-icon [icon]="faTimes" placement="left" ngbTooltip="Cancel"></fa-icon>
+                </button>
+                <button class="btn" [id]="'confirm-btn-'+i" (click)="confirmBtnClick(i)" hidden>
+                    <fa-icon [icon]="faCheck" placement="left" ngbTooltip="Confirm"></fa-icon>
+                </button>
+                <button class="btn" [id]="'copy-btn-'+i" (click)="copyBtnClick(i)">
+                    <fa-icon [icon]="faCopy" placement="left" ngbTooltip="Copy Url"></fa-icon>
+                </button>
+                <button class="btn" [id]="'delete-btn-'+i" (click)="deleteBtnClick(i)">
+                    <fa-icon [icon]="faTrashAlt" placement="left" ngbTooltip="Delete"></fa-icon>
+                </button>
+            </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+            <share [share]="share"></share>
+        </ng-template>
+    </ngb-panel>
+</ngb-accordion>

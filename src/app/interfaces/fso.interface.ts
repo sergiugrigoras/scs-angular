@@ -7,4 +7,5 @@ export interface FsoModel {
     name: string,
     parentId: number | null,
     isSelected?: boolean,
+    content?: FsoModel[]
 }
