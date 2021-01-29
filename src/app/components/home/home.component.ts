@@ -1,6 +1,6 @@
 import { AuthService } from 'src/app/services/auth.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { faHdd, faStickyNote } from '@fortawesome/free-solid-svg-icons';
+import { faHdd, faStickyNote, faShareAlt } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-home',
@@ -13,6 +13,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   faHdd = faHdd;
   faStickyNote = faStickyNote;
+  faShareAlt = faShareAlt;
   constructor(private authService: AuthService) { }
   ngOnDestroy(): void {
     this.isLoggedInSubscription.unsubscribe();

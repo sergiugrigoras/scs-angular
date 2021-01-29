@@ -1,12 +1,13 @@
-<div class="shared-fso" (click)="onClick()">
-    <div [ngStyle]="{'margin-right': fso.isFolder ? '4px' : '8px', 'color': fso.isFolder ? '#ffd242' : '#7291ff'}">
-        <fa-icon [icon]="fso.isFolder ? isOpen ? faFolderOpen: faFolder : faFile"></fa-icon>
+<div class="shared-fso" (click)="onClick()" [title]="fso.name">
+    <div id="fso-name-icon">
+        <span [ngStyle]="{'margin-right': fso.isFolder ? '4px' : '8px', 'color': fso.isFolder ? '#ffd242' : '#7291ff'}">
+            <fa-icon [icon]="fso.isFolder ? isOpen ? faFolderOpen: faFolder : faFile"></fa-icon>
+        </span>
+        <span>
+            {{ fso.name }}
+        </span>
     </div>
-    <div>
-        {{ fso.name }}
-    </div>
-    &nbsp;
-    <div>
+    <div id="fso-size">
         <strong>{{ fso.fileSize | readableBytes: 2 }}</strong>
     </div>
 </div>

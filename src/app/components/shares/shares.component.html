@@ -1,11 +1,12 @@
 <h2>Shares</h2>
+<h5 *ngIf="shares.length === 0">No shared data</h5>
 <ngb-accordion [closeOthers]="true" #acc="ngbAccordion">
     <ngb-panel *ngFor="let share of shares; index as i" [id]="'share-'+i">
         <ng-template ngbPanelHeader let-opened="opened">
             <div class="d-flex align-items-center justify-content-between" [ngStyle]="{'cursor': 'pointer'}">
                 <fa-icon [icon]="opened ? faChevronDown : faChevronRight" (click)="acc.toggle('share-'+i)"></fa-icon>
-                <h5 class="container-fluid text-left" (click)="acc.toggle('share-'+i)">{{ share.publicId }}</h5>
-
+                <h5 class="container-fluid text-left" (click)="acc.toggle('share-'+i)">{{ share.publicId }} <small>{{
+                        share.shareDate | date: 'mediumDate' }}</small></h5>
                 <button class="btn" [id]="'cancel-btn-'+i" (click)="cancelBtnClick(i)" hidden>
                     <fa-icon [icon]="faTimes" placement="left" ngbTooltip="Cancel"></fa-icon>
                 </button>
@@ -21,7 +22,7 @@
             </div>
         </ng-template>
         <ng-template ngbPanelContent>
-            <share [share]="share"></share>
+            <shared-fso *ngFor="let fso of share.content" [fso]="fso"></shared-fso>
         </ng-template>
     </ngb-panel>
 </ngb-accordion>
