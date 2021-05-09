@@ -568,9 +568,59 @@ export class DriveComponent implements OnInit, OnDestroy {
         this.openModal('share');
         break;
       }
+      case 'cut': {
+        this.cutSelected();
+        break;
+      }
+      case 'paste': {
+        this.moveFromClipboard();
+        break;
+      }
       default: {
         break;
       }
+    }
+  }
+
+  cutSelected() {
+    let fsoIdArr: string[] = [];
+    this.content.forEach((elem) => {
+      if (elem.isSelected) {
+        fsoIdArr.push(String(elem.id!));
+      }
+    });
+    this.removeFsoFromUI(fsoIdArr);
+    sessionStorage.setItem('clipboard', fsoIdArr.join(","));
+    this.toastService.show(
+      'Success',
+      `Moved to clipboard ${fsoIdArr.length} item(s)`,
+      'bg-success'
+    );
+  }
+
+  moveFromClipboard() {
+    let clipboard = sessionStorage.getItem('clipboard');
+    if (clipboard) {
+      let fsoIdArr: string[] = clipboard.split(",");
+      this.driveService.move(fsoIdArr, this.id)
+        .subscribe(data => {
+          let successList: FsoModel[] = (<any>data).success;
+          successList.forEach((elem) => {
+            elem.isSelected = true;
+          });
+          let failList: FsoModel[] = (<any>data).fail;
+          this.content = this.content.concat(successList);
+          // this.sorter.next(this.sortedBy);
+
+          if (failList.length > 0) {
+            this.toastService.show(
+              'Error',
+              `Unable to move ${failList.length} item(s)`,
+              'bg-danger'
+            );
+          }
+        });
+      sessionStorage.removeItem('clipboard');
     }
   }
 

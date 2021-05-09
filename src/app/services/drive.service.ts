@@ -1,7 +1,7 @@
 import { DiskModel } from './../interfaces/disk.interface';
 import { FsoModel } from './../interfaces/fso.interface';
 import { environment } from './../../environments/environment';
-import { HttpClient, HttpHeaders, HttpEvent } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpEvent, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { map, catchError, retry, tap } from 'rxjs/operators';
@@ -57,6 +57,17 @@ export class DriveService {
     }).pipe(retry(3), map(data => {
       return data;
     }));
+  }
+
+  move(list: string[], destination: number) {
+    let csv = list.join(',');
+    let params = new HttpParams()
+      .set('fsoIdcsv', csv)
+      .set('destinationDirId', String(destination));
+
+    return this.http.post(apiUrl + '/api/fso/move', null, {
+      headers: { 'Content-Type': 'application/json' }, params
+    });
   }
   rename(fso: FsoModel) {
     return this.http.put(apiUrl + '/api/fso/rename', fso, httpOptions);

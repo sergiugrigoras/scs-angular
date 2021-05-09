@@ -4,9 +4,23 @@
 }
 
 .action-buttons button {
+    position: relative;
+}
+.action-buttons button {
     font-size: 1.5rem;
 }
 
 .action-buttons button:hover {
     color: orangered;
 }
+
+/* .toolbar-button-text{
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    z-index: 2;
+    color: rgb(145, 145, 145);
+    font-size: .8rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 2px #ebebeb36;
+} */

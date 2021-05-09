@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { faFolderPlus, faFileUpload, faSortAlphaDown, faSortAmountDown, faSortNumericDown, faList, faDownload, faTrashAlt, faShareAlt, faICursor } from '@fortawesome/free-solid-svg-icons';
+import { faFolderPlus, faFileUpload, faSortAlphaDown, faSortAmountDown, faSortNumericDown, faList, faDownload, faTrashAlt, faShareAlt, faICursor, faCut, faPaste } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'toolbar',
@@ -19,6 +19,8 @@ export class ToolbarComponent implements OnInit {
   faTrashAlt = faTrashAlt;
   faShareAlt = faShareAlt;
   faICursor = faICursor;
+  faCut = faCut;
+  faPaste = faPaste;
   constructor() { }
 
   ngOnInit(): void {
@@ -26,5 +28,15 @@ export class ToolbarComponent implements OnInit {
 
   emitEvent(val: string) {
     this.action.emit(val);
+  }
+
+  get isClipboardEmpty() {
+    return sessionStorage.getItem('clipboard') == null ? true : false;
+  }
+
+  get clipboardCount() {
+    if (!this.isClipboardEmpty)
+      return sessionStorage.getItem('clipboard')?.split(',').length;
+    return 0;
   }
 }

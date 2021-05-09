@@ -29,4 +29,12 @@
     <button type="button" class="btn" [disabled]="selectedCount!=1" (click)="emitEvent('rename')">
         <fa-icon [icon]="faICursor" ngbTooltip="Rename"></fa-icon>
     </button>
+    <button type="button" class="btn" [disabled]="selectedCount==0" (click)="emitEvent('cut')">
+        <fa-icon [icon]="faCut" ngbTooltip="Cut"></fa-icon>
+    </button>
+    <button type="button" class="btn" [disabled]="isClipboardEmpty" (click)="emitEvent('paste')">
+        <fa-icon [icon]="faPaste" ngbTooltip="Paste">
+        </fa-icon>
+        <!-- <div class="toolbar-button-text">19</div> -->
+    </button>
 </div>
